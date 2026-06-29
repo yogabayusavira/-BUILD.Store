@@ -57,17 +57,18 @@ export const MOCK_PORTFOLIO: PortfolioItem[] = [
     rejectedAt: null,
     rejectionNote: null,
   },
-  // Chibu — $BUILD token + ERC-6551 architecture. Foundational on-chain work.
+  // Tolgay (stateful.art) — ERC-6551 token-bound account contracts.
+  // Foundational on-chain work for the $BUILD.Store cooperative platform.
   {
     id: "pf_003",
-    userId: "u_chibu",
-    title: "$BUILD token + ERC-6551 architecture",
+    userId: "u_tolgay",
+    title: "ERC-6551 token-bound account contracts",
     description:
-      "Token-bound account deployment and treasury multisig design for the cooperative platform.",
+      "Solidity implementation of ERC-6551 token-bound accounts powering $BUILD.Store cooperative member wallets.",
     imageUrl: null,
     projectUrl: null,
     industry: "stem",
-    technologies: ["solidity", "ERC-6551", "multisig"],
+    technologies: ["solidity", "ERC-6551"],
     featured: true,
     createdAt: "2025-09-22T00:00:00Z",
     publishedAt: "2025-09-24T00:00:00Z",

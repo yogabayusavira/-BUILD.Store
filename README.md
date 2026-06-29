@@ -161,7 +161,7 @@ Post-v1 backlog (do **not** bleed into v1):
 
 This sandbox replaces two earlier codebases that are now **raw material, not production targets**:
 
-- `Future Modern/build-store-frontend/` — the public Vercel marketing site (visual reference for this sandbox).
-- `Future Modern/buildstore-backend-Replit-replit-agent/` — the stalled Replit member app written by Brian Okoro / theKidConnect (schema + API reference for this sandbox).
+- `Future Modern/build-store-frontend/` — the public Vercel marketing site, **originally written by Abbas Tolgay Yilmaz (stateful.art)** (visual reference for this sandbox).
+- `Future Modern/buildstore-backend-Replit-replit-agent/` — the stalled Replit member app, **originally written by Jamar McCarthy** (schema + API reference for this sandbox).
 
-Going forward, all $BUILD.Store work happens here.
+Going forward, all $BUILD.Store work happens here under cooperative ownership (Future Modern Builderberg LLC, operating as a cooperative). See `CONTRIBUTORS.md` for the full provenance record.

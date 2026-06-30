@@ -2322,6 +2322,7 @@ export type InboundSubmissionKind =
   | "partner_application"
   | "chat_inquiry"
   | "store_inquiry"
+  | "booking_request"
   | "other";
 
 export const INBOUND_SUBMISSION_KIND_LABELS: Record<InboundSubmissionKind, string> = {
@@ -2333,6 +2334,7 @@ export const INBOUND_SUBMISSION_KIND_LABELS: Record<InboundSubmissionKind, strin
   partner_application: "Partner application",
   chat_inquiry: "Live chat inquiry",
   store_inquiry: "Store inquiry",
+  booking_request: "EPK booking request",
   other: "Other",
 };
 
@@ -2618,6 +2620,86 @@ export interface CalendarMeeting {
   /** Optional recording URL — populated after the meeting. */
   recordingUrl: string | null;
   createdAt: string;
+  updatedAt: string;
+}
+
+/* ------------------------------------------------------------------ */
+/*  Meeting minutes / recording rail                                   */
+/*                                                                     */
+/*  Per locked posture (`future-modern.md`): every internal meeting    */
+/*  between Members captures minutes OR a recording. Routing depends   */
+/*  on the meeting context:                                            */
+/*    project-scoped  → attached to the Project record                 */
+/*    team_governance → "team meetings" log                            */
+/*    peer 1:1        → "1:1 notes" rail                               */
+/*                                                                     */
+/*  Initiator captures by default; other attendees can append          */
+/*  corrections.                                                       */
+/* ------------------------------------------------------------------ */
+
+export type MeetingMinuteFormat = "notes" | "recording" | "transcript_upload";
+
+export const MEETING_MINUTE_FORMAT_LABELS: Record<MeetingMinuteFormat, string> = {
+  notes: "Notes",
+  recording: "Recording URL",
+  transcript_upload: "Transcript / summary upload",
+};
+
+export type MeetingMinuteRouting =
+  | "project_scoped"
+  | "team_governance"
+  | "peer_one_on_one";
+
+export const MEETING_MINUTE_ROUTING_LABELS: Record<MeetingMinuteRouting, string> = {
+  project_scoped: "Project-scoped",
+  team_governance: "Team / governance",
+  peer_one_on_one: "1:1 notes",
+};
+
+export interface MeetingMinuteCorrection {
+  id: string;
+  byUserId: string;
+  body: string;
+  addedAt: string;
+}
+
+export interface MeetingMinute {
+  id: string;
+  meetingId: string;
+  /**
+   * "notes"             → free-text body.
+   * "recording"         → recordingUrl set.
+   * "transcript_upload" → uploadedFile metadata captured; production swap
+   *                      streams the file bytes to object storage and
+   *                      persists the resulting URL alongside.
+   *
+   * Note-taker apps (Otter, Granola, Fireflies, Read.ai, Zoom transcripts)
+   * commonly export TXT / DOCX / PDF / MD. Members drop the exported
+   * artifact in directly rather than retyping into the notes body.
+   */
+  format: MeetingMinuteFormat;
+  /** Routing context — drives which log surfaces this minute. */
+  routing: MeetingMinuteRouting;
+  /** Markdown / plain text minutes body. Null unless format === "notes". */
+  body: string | null;
+  /** Recording URL. Null unless format === "recording". */
+  recordingUrl: string | null;
+  /**
+   * Uploaded transcript / summary metadata. Sandbox captures metadata
+   * only; production swap persists the file bytes to object storage and
+   * sets `uploadedFile.url` to the resulting CDN URL.
+   */
+  uploadedFile: {
+    name: string;
+    size: number;
+    type: string;
+    /** Object storage URL once production swaps in. Null in sandbox. */
+    url: string | null;
+  } | null;
+  capturedByUserId: string;
+  /** Other attendees who've added corrections. */
+  corrections: MeetingMinuteCorrection[];
+  capturedAt: string;
   updatedAt: string;
 }
 

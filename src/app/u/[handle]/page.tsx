@@ -22,6 +22,7 @@ import {
   recognitionsForUser,
 } from "@/lib/mock-data/future-modernist-recognitions";
 import { canonizationsForUser } from "@/lib/mock-data/canonizations";
+import { createEpkBookingRequest } from "@/lib/epk-booking-actions";
 import { profileShouldIndex } from "@/lib/profile-visibility";
 import {
   INDUSTRY_LABELS,
@@ -344,6 +345,108 @@ export default async function PublicProfilePage({
       })()}
 
       {showEpk && epk && <EpkShell epk={epk} userName={publicName(user)} />}
+
+      {showEpk && epk && (
+        <section className="mt-12">
+          <Card className="border-[#5070F0]/40">
+            <CardEyebrow>Booking</CardEyebrow>
+            <CardTitle className="mt-1 text-2xl">
+              Book {publicName(user)} through Future Modern
+            </CardTitle>
+            <p className="mt-2 text-sm text-ink-muted">
+              {epk.bookingNote ??
+                `Engagements run by Future Modern. ${publicName(user)} delivers under FM's agency. Submit the brief; our agent reviews and routes for confirmation.`}
+            </p>
+            <form
+              action={createEpkBookingRequest}
+              className="mt-5 grid gap-3 md:grid-cols-2"
+            >
+              <input type="hidden" name="artistId" value={user.id} />
+              <label className="block">
+                <span className="text-[11px] uppercase tracking-wider text-ink-muted">
+                  Your name
+                </span>
+                <input
+                  name="requesterName"
+                  type="text"
+                  required
+                  className="mt-1 w-full rounded-lg border border-[var(--surface-border)] bg-[var(--surface)] px-3 py-2 text-sm"
+                />
+              </label>
+              <label className="block">
+                <span className="text-[11px] uppercase tracking-wider text-ink-muted">
+                  Email
+                </span>
+                <input
+                  name="requesterEmail"
+                  type="email"
+                  required
+                  className="mt-1 w-full rounded-lg border border-[var(--surface-border)] bg-[var(--surface)] px-3 py-2 text-sm"
+                />
+              </label>
+              <label className="block md:col-span-2">
+                <span className="text-[11px] uppercase tracking-wider text-ink-muted">
+                  Company / org (optional)
+                </span>
+                <input
+                  name="requesterCompany"
+                  type="text"
+                  className="mt-1 w-full rounded-lg border border-[var(--surface-border)] bg-[var(--surface)] px-3 py-2 text-sm"
+                />
+              </label>
+              <label className="block md:col-span-2">
+                <span className="text-[11px] uppercase tracking-wider text-ink-muted">
+                  Brief (≥ 30 chars — scope, timeline, budget if known)
+                </span>
+                <textarea
+                  name="brief"
+                  required
+                  minLength={30}
+                  rows={5}
+                  placeholder="Example: We'd like to book a 60-minute scoping call about a feature placement for our brand campaign. Budget range $X. Looking at a Q3 timeline."
+                  className="mt-1 w-full rounded-lg border border-[var(--surface-border)] bg-[var(--surface)] px-3 py-2 text-sm"
+                />
+              </label>
+              <label className="block">
+                <span className="text-[11px] uppercase tracking-wider text-ink-muted">
+                  Proposed start
+                </span>
+                <input
+                  name="startsAt"
+                  type="datetime-local"
+                  required
+                  className="mt-1 w-full rounded-lg border border-[var(--surface-border)] bg-[var(--surface)] px-3 py-2 text-sm"
+                />
+              </label>
+              <label className="block">
+                <span className="text-[11px] uppercase tracking-wider text-ink-muted">
+                  Proposed end
+                </span>
+                <input
+                  name="endsAt"
+                  type="datetime-local"
+                  required
+                  className="mt-1 w-full rounded-lg border border-[var(--surface-border)] bg-[var(--surface)] px-3 py-2 text-sm"
+                />
+              </label>
+              <div className="md:col-span-2">
+                <button
+                  type="submit"
+                  className="rounded-full px-5 py-2 text-sm font-medium text-white"
+                  style={{ backgroundColor: "#5070F0" }}
+                >
+                  Submit booking request
+                </button>
+                <p className="mt-2 text-[11px] text-ink-faint">
+                  Request lands with FM&apos;s agent for review. Approved
+                  briefs route to {publicName(user)} for confirmation.
+                  You&apos;ll hear back via email at the address above.
+                </p>
+              </div>
+            </form>
+          </Card>
+        </section>
+      )}
 
       <section className="mt-14">
         <h2 className="font-display text-2xl font-semibold">

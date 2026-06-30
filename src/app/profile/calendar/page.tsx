@@ -31,6 +31,11 @@ import {
   removeAvailability,
   removeBlock,
 } from "@/lib/calendar-actions";
+import { minuteForMeeting } from "@/lib/mock-data/meeting-minutes";
+import {
+  captureMeetingMinute,
+  addMinuteCorrection,
+} from "@/lib/meeting-minute-actions";
 import {
   CALENDAR_MEETING_KIND_LABELS,
   CALENDAR_MEETING_STATUS_LABELS,
@@ -230,6 +235,174 @@ export default async function ProfileCalendarPage() {
                         </form>
                       )}
                   </div>
+
+                  {/* Minutes / recording rail per meeting.
+                      Internal Member-to-Member meetings require minutes;
+                      external + governance can capture too. */}
+                  {(() => {
+                    const minute = minuteForMeeting(m.id);
+                    return (
+                      <details className="mt-3 rounded-lg bg-[var(--surface)] p-3">
+                        <summary className="cursor-pointer text-[11px] uppercase tracking-wider text-brand-magenta">
+                          {minute ? "Minutes on file" : "Capture minutes or recording"}
+                        </summary>
+                        {minute && (
+                          <div className="mt-3 space-y-2 text-xs">
+                            {minute.format === "notes" && (
+                              <div className="whitespace-pre-line text-ink">
+                                {minute.body}
+                              </div>
+                            )}
+                            {minute.format === "recording" && (
+                              <a
+                                href={minute.recordingUrl ?? "#"}
+                                target="_blank"
+                                rel="noreferrer"
+                                className="text-brand-magenta underline"
+                              >
+                                Recording ↗
+                              </a>
+                            )}
+                            {minute.format === "transcript_upload" && minute.uploadedFile && (
+                              <div className="rounded-lg border border-[var(--surface-border)] p-2 text-ink">
+                                <strong>{minute.uploadedFile.name}</strong>{" "}
+                                <span className="text-ink-faint">
+                                  ({Math.round(minute.uploadedFile.size / 1024)} kB
+                                  {minute.uploadedFile.type
+                                    ? ` · ${minute.uploadedFile.type}`
+                                    : ""})
+                                </span>
+                                {minute.uploadedFile.url ? (
+                                  <a
+                                    href={minute.uploadedFile.url}
+                                    target="_blank"
+                                    rel="noreferrer"
+                                    className="ml-2 text-brand-magenta underline"
+                                  >
+                                    Open ↗
+                                  </a>
+                                ) : (
+                                  <span className="ml-2 text-[10px] text-ink-faint">
+                                    (sandbox · production swap streams to storage)
+                                  </span>
+                                )}
+                              </div>
+                            )}
+                            <p className="text-[10px] text-ink-faint">
+                              Captured{" "}
+                              {new Date(minute.capturedAt).toLocaleString()}
+                              {" · "}routing: {minute.routing}
+                            </p>
+                            {minute.corrections.length > 0 && (
+                              <div className="mt-2 space-y-1">
+                                <span className="text-[10px] uppercase tracking-wider text-ink-faint">
+                                  Corrections
+                                </span>
+                                <ul className="space-y-1">
+                                  {minute.corrections.map((c) => (
+                                    <li
+                                      key={c.id}
+                                      className="text-[11px] text-ink"
+                                    >
+                                      • {c.body}
+                                    </li>
+                                  ))}
+                                </ul>
+                              </div>
+                            )}
+                            <form
+                              action={addMinuteCorrection}
+                              className="mt-2 flex flex-wrap items-end gap-2"
+                            >
+                              <input
+                                type="hidden"
+                                name="minuteId"
+                                value={minute.id}
+                              />
+                              <input
+                                name="body"
+                                type="text"
+                                placeholder="Add a correction…"
+                                className="flex-1 rounded-lg border border-[var(--surface-border)] bg-[var(--surface)] px-2 py-1 text-[11px]"
+                              />
+                              <button
+                                type="submit"
+                                className="rounded-full border border-[var(--surface-border)] px-3 py-1 text-[10px] hover:border-brand-magenta hover:text-brand-magenta"
+                              >
+                                Append
+                              </button>
+                            </form>
+                          </div>
+                        )}
+                        <form
+                          action={captureMeetingMinute}
+                          className="mt-3 space-y-2"
+                          encType="multipart/form-data"
+                        >
+                          <input type="hidden" name="meetingId" value={m.id} />
+                          <label className="block">
+                            <span className="text-[10px] uppercase tracking-wider text-ink-faint">
+                              Format
+                            </span>
+                            <select
+                              name="format"
+                              defaultValue={minute?.format ?? "notes"}
+                              className="mt-1 rounded-lg border border-[var(--surface-border)] bg-[var(--surface)] px-2 py-1 text-xs"
+                            >
+                              <option value="notes">Notes (typed)</option>
+                              <option value="recording">Recording URL</option>
+                              <option value="transcript_upload">
+                                Transcript / summary upload
+                              </option>
+                            </select>
+                          </label>
+                          <label className="block">
+                            <span className="text-[10px] uppercase tracking-wider text-ink-faint">
+                              Notes body (if Notes)
+                            </span>
+                            <textarea
+                              name="body"
+                              rows={3}
+                              defaultValue={minute?.body ?? ""}
+                              placeholder="What was decided. What's next. Who owns what."
+                              className="mt-1 w-full rounded-lg border border-[var(--surface-border)] bg-[var(--surface)] px-2 py-1 text-xs"
+                            />
+                          </label>
+                          <label className="block">
+                            <span className="text-[10px] uppercase tracking-wider text-ink-faint">
+                              Recording URL (if Recording)
+                            </span>
+                            <input
+                              name="recordingUrl"
+                              type="url"
+                              defaultValue={minute?.recordingUrl ?? ""}
+                              placeholder="https://…"
+                              className="mt-1 w-full rounded-lg border border-[var(--surface-border)] bg-[var(--surface)] px-2 py-1 text-xs"
+                            />
+                          </label>
+                          <label className="block">
+                            <span className="text-[10px] uppercase tracking-wider text-ink-faint">
+                              Transcript / summary file (if Upload — Otter,
+                              Granola, Fireflies, Zoom transcript, etc.)
+                            </span>
+                            <input
+                              name="transcriptFile"
+                              type="file"
+                              accept=".txt,.md,.docx,.doc,.pdf,.vtt,.srt,application/pdf,text/plain,text/markdown,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+                              className="mt-1 block w-full text-[11px] text-ink-muted file:mr-3 file:rounded-full file:border file:border-[var(--surface-border)] file:bg-[var(--surface-inset)] file:px-3 file:py-1 file:text-[10px] file:font-medium file:text-ink"
+                            />
+                          </label>
+                          <button
+                            type="submit"
+                            className="rounded-full px-3 py-1 text-[11px] font-medium text-white"
+                            style={{ backgroundColor: "#5070F0" }}
+                          >
+                            {minute ? "Replace" : "Capture"}
+                          </button>
+                        </form>
+                      </details>
+                    );
+                  })()}
                 </li>
               );
             })}

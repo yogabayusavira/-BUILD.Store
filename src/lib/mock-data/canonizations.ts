@@ -3,10 +3,22 @@
  * NFTs with ERC-6551 token-bound accounts. See `future-modern.md`
  * "Annual canonization" section for the principle.
  *
- * Sandbox seeds one prior-year canon (2025) for established members so
- * the /u/[handle] "Cooperative canon" section has cards to display.
- * Production swap drops in the on-chain references (tokenId + TBA
- * address) once the mint cycle runs.
+ * ============================================================
+ * SANDBOX ILLUSTRATION ONLY — DO NOT MIGRATE TO PRODUCTION.
+ * ============================================================
+ *
+ * The 2025 entries below are seeded so the UI surfaces have cards to
+ * render during development. They are NOT cooperative canon. Production
+ * launches with **zero canonizations on file**; the first real run
+ * happens at the end of the cooperative's first full calendar year of
+ * operation (likely Dec 31 of the launch year). Awarding retroactive
+ * tier-cards based on present-day judgment about contributions made
+ * before the MVP Score system existed would invent standing that
+ * nobody actually earned through the system, and would undermine the
+ * authenticity of every future card.
+ *
+ * **Production-swap step:** wipe MOCK_CANONIZATIONS contents (empty
+ * array) before deploying. The cooperative canon starts at zero.
  */
 import type { MemberCanonization } from "@/lib/types";
 

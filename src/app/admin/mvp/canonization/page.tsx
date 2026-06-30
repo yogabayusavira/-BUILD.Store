@@ -69,6 +69,26 @@ export default async function AdminCanonizationPage() {
         allocation, wrapped recognitions, and cooperative artifacts.
       </p>
 
+      <div
+        className="mt-4 rounded-lg border-l-4 p-3 text-sm"
+        style={{
+          borderColor: "#D828A0",
+          backgroundColor: "rgba(216, 40, 160, 0.06)",
+        }}
+      >
+        <span className="text-[11px] uppercase tracking-wider text-brand-magenta">
+          Sandbox illustration · not cooperative canon
+        </span>
+        <p className="mt-1 text-ink">
+          The 2025 entries below are seeded so the UI has cards to
+          render during development. They are NOT cooperative canon.
+          **The cooperative starts at zero** — production launches
+          with the canonization store empty. First real canonization
+          runs at the end of the first full calendar year of operation.
+          Pre-production migration step: wipe the seed.
+        </p>
+      </div>
+
       <Card className="mt-8 border-[#D4AF37]/40">
         <CardEyebrow>Run canonization</CardEyebrow>
         <CardTitle className="mt-1 text-xl">

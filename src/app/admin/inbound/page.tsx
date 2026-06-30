@@ -427,6 +427,11 @@ function SubmissionRow({
                         Matched: {m.matchedTags.slice(0, 5).join(", ")}
                       </div>
                     )}
+                    <div className="mt-0.5 text-[10px] text-ink-faint">
+                      Fit {(m.fitScore * 100).toFixed(0)}% · MVP ×
+                      {m.mvpFactor.toFixed(2)}
+                      {m.ovr !== null && ` (OVR ${m.ovr})`}
+                    </div>
                   </div>
                   <span className="rounded-full bg-[var(--surface-inset)] px-2 py-0.5 text-[11px] font-medium">
                     {(m.score * 100).toFixed(0)}%

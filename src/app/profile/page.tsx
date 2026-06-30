@@ -28,7 +28,8 @@ import {
   removeMyTalentTag,
   rescanMyTalentTags,
 } from "@/lib/talent-tag-actions";
-import { mvpScoreForUser } from "@/lib/mock-data/mvp-scores";
+import { mvpScoreForUser, MOCK_MVP_SCORES } from "@/lib/mock-data/mvp-scores";
+import { championsCourtMembers } from "@/lib/mvp-score";
 import { INDUSTRY_LABELS, type Industry } from "@/lib/types";
 import { Card, CardEyebrow } from "@/components/Card";
 import { TierBadge } from "@/components/TierBadge";
@@ -223,9 +224,16 @@ export default async function ProfilePage() {
       {(() => {
         const mvpSnapshot = mvpScoreForUser(user.id);
         if (!mvpSnapshot) return null;
+        const courtIds = new Set(championsCourtMembers(MOCK_MVP_SCORES, MOCK_USERS));
+        const isInCourt = courtIds.has(user.id);
         return (
           <div className="mt-6">
-            <MvpCard snapshot={mvpSnapshot} user={user} mode="self" />
+            <MvpCard
+              snapshot={mvpSnapshot}
+              user={user}
+              mode="self"
+              isInCourt={isInCourt}
+            />
             <p className="mt-2 text-[11px] text-ink-faint">
               Your MVP Score. Sub-rating breakdown is self-only by
               cooperative policy. Peer Members see your OVR + standing

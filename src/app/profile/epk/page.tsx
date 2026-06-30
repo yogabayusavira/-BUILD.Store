@@ -45,6 +45,13 @@ export default async function ProfileEpkPage() {
 
   const epk = epkForUser(user.id);
 
+  // Tier-distinguished editor per the locked tier-access matrix:
+  // Members get full self-managed EPK (all sections editable); Partner-
+  // tier artists get a constrained shell — core fields editable, rich
+  // sections (featured work, metrics, socials, web3, press) admin-curated
+  // only. See `future-modern.md` tier-access matrix.
+  const isMemberTier = user.membershipTier === "member";
+
   return (
     <div className="mx-auto max-w-3xl px-6 py-12">
       <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
@@ -67,19 +74,23 @@ export default async function ProfileEpkPage() {
         </Link>
       </div>
 
+      {!isMemberTier && <PartnerTierBanner />}
+
       <StatusCard epk={epk} userHandle={user.handle} />
 
       <CoreEditor epk={epk} />
 
-      <FeaturedWorkSection entries={epk?.featuredWork ?? []} />
-
-      <MetricsSection metrics={epk?.metrics ?? []} />
-
-      <SocialHandlesSection handles={epk?.socialHandles ?? []} />
-
-      <Web3ProfilesSection profiles={epk?.web3Profiles ?? []} />
-
-      <PressSection clips={epk?.press ?? []} />
+      {isMemberTier ? (
+        <>
+          <FeaturedWorkSection entries={epk?.featuredWork ?? []} />
+          <MetricsSection metrics={epk?.metrics ?? []} />
+          <SocialHandlesSection handles={epk?.socialHandles ?? []} />
+          <Web3ProfilesSection profiles={epk?.web3Profiles ?? []} />
+          <PressSection clips={epk?.press ?? []} />
+        </>
+      ) : (
+        <PartnerCuratedReadOnly epk={epk} />
+      )}
 
       <SubmitSection epk={epk} />
     </div>
@@ -760,6 +771,91 @@ function TextareaField({
         required={required}
         className="mt-1 w-full rounded-lg border border-[var(--surface-border)] bg-[var(--surface)] px-3 py-2 text-sm"
       />
+    </div>
+  );
+}
+
+/* ------------------------------------------------------------------ */
+/*  Partner-tier limited-mode surfaces                                  */
+/*                                                                     */
+/*  Locked tier-access matrix (`future-modern.md`):                    */
+/*    Member: full self-managed EPK; all sections editable.            */
+/*    Partner: core fields editable; rich sections (featured work,     */
+/*             metrics, socials, web3, press) admin-curated only.      */
+/*                                                                     */
+/*  EPK availability is NOT gated on tier — Partner artists get EPKs   */
+/*  because the format is essential to their artistry. The distinction */
+/*  is depth of self-management, not existence.                        */
+/* ------------------------------------------------------------------ */
+
+function PartnerTierBanner() {
+  return (
+    <Card className="mt-6 border-[#5070F0]/40">
+      <CardEyebrow>Partner-tier EPK</CardEyebrow>
+      <CardTitle className="mt-1 text-lg">
+        Minimal editor, admin-curated depth
+      </CardTitle>
+      <p className="mt-2 text-sm text-ink-muted">
+        You have a Partner-tier signed LOI with the cooperative.
+        Partner EPKs are admin-curated: you control the core narrative
+        (tagline, bios, booking note), and admin handles the featured
+        work, metrics, socials, web3 profiles, and press blocks on your
+        behalf. This keeps the front-and-center artist surface clean
+        and reduces the admin overhead on your end.
+      </p>
+      <p className="mt-2 text-xs text-ink-faint">
+        Promotion to Member-tier unlocks the full self-managed editor.
+        Promotion eligibility tracks via the MVP Score (75+ OVR
+        sustained); see <code>future-modern.md</code> tier-access matrix
+        for the structural framing.
+      </p>
+    </Card>
+  );
+}
+
+function PartnerCuratedReadOnly({ epk }: { epk: ArtistEpk | null }) {
+  const featuredCount = epk?.featuredWork.length ?? 0;
+  const pressCount = epk?.press.length ?? 0;
+  const socialCount = epk?.socialHandles.length ?? 0;
+  const web3Count = epk?.web3Profiles.length ?? 0;
+  const metricsCount = epk?.metrics.length ?? 0;
+
+  return (
+    <Card className="mt-6">
+      <CardEyebrow>Admin-curated sections</CardEyebrow>
+      <CardTitle className="mt-1 text-xl">
+        Featured work, press, metrics, socials, web3
+      </CardTitle>
+      <p className="mt-2 text-sm text-ink-muted">
+        These sections sit on your published EPK once admin curates them.
+        Read-only for you here; if anything is missing or needs an
+        update, ping admin and they&apos;ll handle the edit.
+      </p>
+
+      <div className="mt-4 grid gap-3 md:grid-cols-3">
+        <CuratedStat label="Featured work" count={featuredCount} />
+        <CuratedStat label="Press clips" count={pressCount} />
+        <CuratedStat label="Metrics" count={metricsCount} />
+        <CuratedStat label="Social handles" count={socialCount} />
+        <CuratedStat label="Web3 profiles" count={web3Count} />
+      </div>
+
+      <p className="mt-4 text-[11px] text-ink-faint">
+        Empty? Admin probably hasn&apos;t curated yet, or your engagement
+        history doesn&apos;t yet have featured-work candidates. Both are
+        normal early on.
+      </p>
+    </Card>
+  );
+}
+
+function CuratedStat({ label, count }: { label: string; count: number }) {
+  return (
+    <div className="rounded-lg border border-[var(--surface-border)] bg-[var(--surface)] p-3">
+      <div className="text-[10px] uppercase tracking-wider text-ink-faint">
+        {label}
+      </div>
+      <div className="mt-1 font-display text-xl font-semibold">{count}</div>
     </div>
   );
 }

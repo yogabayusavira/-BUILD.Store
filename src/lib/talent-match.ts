@@ -31,6 +31,7 @@
  */
 import type { Industry, User } from "@/lib/types";
 import { MOCK_USERS } from "@/lib/mock-data/users";
+import { mvpScoreForUser } from "@/lib/mock-data/mvp-scores";
 
 /**
  * Stop words excluded from extracted tag lists. Conservative — we keep
@@ -178,8 +179,14 @@ export function deriveTalentTagsFromUser(user: User): string[] {
 
 export interface TalentMatchResult {
   user: User;
-  /** 0..1 overall fit. */
+  /** Final score = fit × mvpFactor. Higher is better. */
   score: number;
+  /** Pre-MVP fit score (0..1) — pillar + tag + discipline composite. */
+  fitScore: number;
+  /** Multiplier applied for MVP standing. 1.0 = neutral / no snapshot. */
+  mvpFactor: number;
+  /** Snapshot OVR, or null if no snapshot on file. */
+  ovr: number | null;
   /** Tags that drove the match. Useful for the admin explainer panel. */
   matchedTags: string[];
   /** Pillars in common with the opportunity. */
@@ -187,14 +194,41 @@ export interface TalentMatchResult {
 }
 
 /**
- * Score every cooperative member against a target tag/pillar set.
- * Returns the top N suggestions sorted by score.
+ * MVP factor curve. Members without a snapshot default to neutral (1.0)
+ * so they aren't penalized for being new / Partner-tier.
  *
- * Scoring weights:
- *   - Pillar overlap         : weight 0.45 of total
- *   - Tag overlap (Jaccard)  : weight 0.45 of total
- *   - Discipline boost       : weight 0.10 (small bias toward members whose
- *                              discipline label contains any target tag)
+ *   OVR  0 → 0.5x (sub-threshold standing damps any match)
+ *   OVR 50 → ~0.9x (near-neutral)
+ *   OVR 65 → ~1.02x (just above probation; barely above neutral)
+ *   OVR 70 → 1.07x (Member good standing)
+ *   OVR 80 → 1.15x (Future Modernist pool)
+ *   OVR 90 → 1.23x (Champion's Court eligible)
+ *   OVR 99 → 1.3x (peak)
+ *
+ * Linear scaling between 0 and 99 from 0.5 to 1.3. Tunable later.
+ */
+export function mvpFactorForUser(userId: string): { factor: number; ovr: number | null } {
+  const snapshot = mvpScoreForUser(userId);
+  if (!snapshot) return { factor: 1.0, ovr: null };
+  const factor = 0.5 + (snapshot.ovr / 99) * 0.8;
+  return { factor, ovr: snapshot.ovr };
+}
+
+/**
+ * Score every cooperative member against a target tag/pillar set.
+ * Returns the top N suggestions sorted by final score.
+ *
+ * Fit scoring weights (sum to 1.0):
+ *   - Pillar overlap         : 0.45
+ *   - Tag overlap (Jaccard)  : 0.45
+ *   - Discipline boost       : 0.10
+ *
+ * Final score = fitScore × mvpFactor. The MVP multiplier closes the
+ * compliance ↔ opportunity-routing loop locked in memory: high-
+ * performing members rank above weaker performers at equivalent fit;
+ * members with compliance penalties dragging their OVR down get a
+ * smaller share of inbound opportunity flow until they earn standing
+ * back. Members without an MVP snapshot default to neutral (1.0).
  */
 export function scoreTalentMatch(
   target: { pillars: Industry[]; keywordTags: string[] },
@@ -224,12 +258,23 @@ export function scoreTalentMatch(
       );
       const disciplineBoost = disciplineHit ? 1 : 0;
 
-      const score =
+      const fitScore =
         0.45 * pillarScore + 0.45 * tagScore + 0.1 * disciplineBoost;
 
-      return { user, score, matchedTags, matchedPillars };
+      const { factor: mvpFactor, ovr } = mvpFactorForUser(user.id);
+      const score = fitScore * mvpFactor;
+
+      return {
+        user,
+        score,
+        fitScore,
+        mvpFactor,
+        ovr,
+        matchedTags,
+        matchedPillars,
+      };
     })
-    .filter((r) => r.score > 0)
+    .filter((r) => r.fitScore > 0)
     .sort((a, b) => b.score - a.score)
     .slice(0, limit);
 

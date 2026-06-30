@@ -15,8 +15,10 @@ import { requireAdmin } from "@/lib/auth-stub";
 import { MOCK_USERS } from "@/lib/mock-data/users";
 import {
   MOCK_MVP_PENALTIES,
+  MOCK_MVP_SCORES,
   mvpScoreForUser,
 } from "@/lib/mock-data/mvp-scores";
+import { championsCourtMembers } from "@/lib/mvp-score";
 import {
   applyCompliancePenalty,
   rescindCompliancePenalty,
@@ -66,7 +68,14 @@ export default async function AdminMvpUserPage({
 
       {snapshot && (
         <div className="mt-8">
-          <MvpCard snapshot={snapshot} user={user} mode="self" />
+          <MvpCard
+            snapshot={snapshot}
+            user={user}
+            mode="self"
+            isInCourt={new Set(
+              championsCourtMembers(MOCK_MVP_SCORES, MOCK_USERS),
+            ).has(user.id)}
+          />
         </div>
       )}
 

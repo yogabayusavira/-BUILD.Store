@@ -15,7 +15,8 @@ import { MOCK_PORTFOLIO } from "@/lib/mock-data/portfolio";
 import { aggregateRating } from "@/lib/mock-data/peer-reviews";
 import { testimonialsForUser } from "@/lib/mock-data/customer-feedback";
 import { epkForUser } from "@/lib/mock-data/artist-epk";
-import { mvpScoreForUser } from "@/lib/mock-data/mvp-scores";
+import { mvpScoreForUser, MOCK_MVP_SCORES } from "@/lib/mock-data/mvp-scores";
+import { championsCourtMembers } from "@/lib/mvp-score";
 import {
   INDUSTRY_LABELS,
   canSendDirectMessage,
@@ -235,6 +236,8 @@ export default async function PublicProfilePage({
         const isSelfOrAdmin =
           viewer.id === user.id || viewer.isAdmin === true;
         const mode = isSelfOrAdmin ? "self" : "peer";
+        const courtIds = new Set(championsCourtMembers(MOCK_MVP_SCORES, MOCK_USERS));
+        const isInCourt = courtIds.has(user.id);
         return (
           <section className="mt-14">
             <div className="flex items-baseline justify-between gap-3">
@@ -248,7 +251,12 @@ export default async function PublicProfilePage({
               </span>
             </div>
             <div className="mt-4">
-              <MvpCard snapshot={mvpSnapshot} user={user} mode={mode} />
+              <MvpCard
+                snapshot={mvpSnapshot}
+                user={user}
+                mode={mode}
+                isInCourt={isInCourt}
+              />
             </div>
           </section>
         );

@@ -45,12 +45,28 @@ interface MvpCardProps {
     | "membershipTier"
   >;
   mode: "self" | "peer";
+  /**
+   * Whether this user qualifies for Champion's Circle (top 10% of
+   * Members AND OVR ≥ 90). Caller computes this via
+   * `championsCourtMembers()` because the gate depends on cohort context
+   * the card alone doesn't have. Default false.
+   */
+  isInCourt?: boolean;
   className?: string;
 }
 
-export function MvpCard({ snapshot, user, mode, className }: MvpCardProps) {
+export function MvpCard({
+  snapshot,
+  user,
+  mode,
+  isInCourt = false,
+  className,
+}: MvpCardProps) {
   const band = standingBand(snapshot.ovr);
-  const accent = BAND_ACCENT[band];
+  // Champion's Circle visually overrides the band accent — Court members
+  // get the gold-flecked green treatment regardless of which band they
+  // technically fall into (they're already at OVR ≥ 90 by definition).
+  const accent = isInCourt ? CHAMPIONS_CIRCLE_ACCENT : BAND_ACCENT[band];
   const peer = mode === "peer" ? peerView(snapshot) : null;
   const ovrTextSize = "text-6xl";
 
@@ -68,6 +84,16 @@ export function MvpCard({ snapshot, user, mode, className }: MvpCardProps) {
         style={{ backgroundColor: accent.bar }}
         aria-hidden
       />
+
+      {isInCourt && (
+        <div
+          className="absolute right-3 top-3 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white shadow"
+          style={{ backgroundColor: "#007048" }}
+          aria-label="Champion's Circle member"
+        >
+          ★ Champion&apos;s Circle
+        </div>
+      )}
 
       <div className="flex items-start justify-between gap-4">
         <div className="flex min-w-0 items-center gap-3">
@@ -272,6 +298,19 @@ interface BandAccent {
  * mid bands stay neutral; review bands flag magenta to signal attention
  * without going scarlet-letter.
  */
+/**
+ * Champion's Circle accent — distinct from the OVR-only band palette
+ * since the Court status is cohort-relative (top 10%) not OVR-absolute.
+ * Slightly richer green + gold tint to mark the elite tier.
+ */
+const CHAMPIONS_CIRCLE_ACCENT: BandAccent = {
+  border: "rgba(0, 112, 72, 0.65)",
+  bar: "#007048",
+  ovr: "#007048",
+  bg: "rgba(0, 112, 72, 0.14)",
+  fg: "#007048",
+};
+
 const BAND_ACCENT: Record<MvpStandingBand, BandAccent> = {
   champions_court_eligible: {
     border: "rgba(0, 112, 72, 0.5)",

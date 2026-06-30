@@ -2527,6 +2527,100 @@ export const MVP_STANDING_LABELS: Record<MvpStandingBand, string> = {
  *   Phase 2 (later): same shortlist, Member vote replaces admin pick.
  *                    Member-count gated (~15-25 voting Members threshold).
  */
+/* ------------------------------------------------------------------ */
+/*  Shared cooperative calendar                                        */
+/*                                                                     */
+/*  Three primitives:                                                  */
+/*    - CalendarAvailability : weekly recurring time windows a Member  */
+/*                             marks as bookable.                      */
+/*    - CalendarBlock         : one-off block of an availability window */
+/*                             (out, focus time, personal).            */
+/*    - CalendarMeeting       : scheduled time involving one or more   */
+/*                             Members. Three kinds:                   */
+/*                               - peer_internal  : Member ↔ Member    */
+/*                                                  autonomous booking */
+/*                               - external_client : routed through    */
+/*                                                  FM agent           */
+/*                               - team_governance : cooperative-level */
+/*                                                                     */
+/*  Production swap layers OAuth integration (Cal.com self-hosted or   */
+/*  Google Calendar API + Microsoft Graph). See production-swap        */
+/*  checklist §7j for the calendar OAuth + EPK booking pipeline.       */
+/* ------------------------------------------------------------------ */
+
+export interface CalendarAvailability {
+  id: string;
+  userId: string;
+  /** 0 = Sunday, 6 = Saturday. */
+  dayOfWeek: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+  /** Minutes from midnight in the user's local timezone. 0-1440. */
+  startMinute: number;
+  endMinute: number;
+  /** IANA timezone (e.g., "America/New_York"). Sandbox defaults to UTC. */
+  timezone: string;
+  createdAt: string;
+}
+
+export interface CalendarBlock {
+  id: string;
+  userId: string;
+  startsAt: string; // ISO datetime
+  endsAt: string;
+  reason: string | null;
+  createdAt: string;
+}
+
+export type CalendarMeetingKind =
+  | "peer_internal"
+  | "external_client"
+  | "team_governance";
+
+export const CALENDAR_MEETING_KIND_LABELS: Record<CalendarMeetingKind, string> = {
+  peer_internal: "Member-to-Member",
+  external_client: "External client",
+  team_governance: "Team / governance",
+};
+
+export type CalendarMeetingStatus =
+  | "pending"
+  | "confirmed"
+  | "declined"
+  | "cancelled";
+
+export const CALENDAR_MEETING_STATUS_LABELS: Record<CalendarMeetingStatus, string> = {
+  pending: "Pending confirmation",
+  confirmed: "Confirmed",
+  declined: "Declined",
+  cancelled: "Cancelled",
+};
+
+export interface CalendarMeeting {
+  id: string;
+  title: string;
+  description: string | null;
+  startsAt: string;
+  endsAt: string;
+  kind: CalendarMeetingKind;
+  organizerId: string;
+  attendeeIds: string[];
+  /** Per-attendee confirmation state. Empty = no one has confirmed yet. */
+  confirmedByAttendeeIds: string[];
+  status: CalendarMeetingStatus;
+  /** External-client booking context. */
+  externalClientName: string | null;
+  externalClientEmail: string | null;
+  /** Optional Project association — links meeting to a contract / internal project. */
+  projectId: string | null;
+  /** FM agent / PM in the loop on external bookings (per flat-governance principle). */
+  pmUserId: string | null;
+  /** Sandbox notes; production swap to linked meeting-minutes row. */
+  notesPreview: string | null;
+  /** Optional recording URL — populated after the meeting. */
+  recordingUrl: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
 /**
  * Annual canonization — year-end snapshot of a Member's standing
  * minted as a permanent on-chain artifact. Each row represents one

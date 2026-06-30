@@ -19,6 +19,8 @@ import {
 import { MOCK_FEEDBACK } from "@/lib/mock-data/feedback";
 import { MOCK_CUSTOMER_FEEDBACK } from "@/lib/mock-data/customer-feedback";
 import { listInboundSubmissions } from "@/lib/mock-data/inbound-submissions";
+import { MOCK_MVP_SCORES } from "@/lib/mock-data/mvp-scores";
+import { championsCourtMembers } from "@/lib/mvp-score";
 import { Card, CardEyebrow, CardTitle } from "@/components/Card";
 
 export default async function AdminHome() {
@@ -69,6 +71,7 @@ export default async function AdminHome() {
   const inboundOpen = inboundRows.filter(
     (r) => r.status === "new" || r.status === "in_triage" || r.status === "needs_info",
   ).length;
+  const championsCircleCount = championsCourtMembers(MOCK_MVP_SCORES, MOCK_USERS).length;
 
   const tiles = [
     {
@@ -76,6 +79,12 @@ export default async function AdminHome() {
       title: "Inbound",
       count: inboundOpen,
       sub: `Open across signups, RFPs, chats, quotes, partner apps · ${inboundRows.length} total`,
+    },
+    {
+      href: "/admin/mvp",
+      title: "MVP Score",
+      count: championsCircleCount,
+      sub: `Champion's Circle (top 10% AND ≥ 90) · ${MOCK_MVP_SCORES.length} snapshots`,
     },
     { href: "/admin/members", title: "Members", count: MOCK_USERS.length, sub: "Across all tiers" },
     { href: "/admin/applications", title: "Applications", count: pending, sub: "Pending review" },

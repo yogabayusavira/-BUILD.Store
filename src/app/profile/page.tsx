@@ -28,10 +28,12 @@ import {
   removeMyTalentTag,
   rescanMyTalentTags,
 } from "@/lib/talent-tag-actions";
+import { mvpScoreForUser } from "@/lib/mock-data/mvp-scores";
 import { INDUSTRY_LABELS, type Industry } from "@/lib/types";
 import { Card, CardEyebrow } from "@/components/Card";
 import { TierBadge } from "@/components/TierBadge";
 import { Avatar } from "@/components/Avatar";
+import { MvpCard } from "@/components/MvpCard";
 
 const ALL_INDUSTRIES: Industry[] = ["stem", "creative-media", "professional-services"];
 
@@ -217,6 +219,23 @@ export default async function ProfilePage() {
           </button>
         </form>
       </Card>
+
+      {(() => {
+        const mvpSnapshot = mvpScoreForUser(user.id);
+        if (!mvpSnapshot) return null;
+        return (
+          <div className="mt-6">
+            <MvpCard snapshot={mvpSnapshot} user={user} mode="self" />
+            <p className="mt-2 text-[11px] text-ink-faint">
+              Your MVP Score. Sub-rating breakdown is self-only by
+              cooperative policy. Peer Members see your OVR + standing
+              band + active compliance signal (if any), nothing else.
+              Public web sees nothing. See <code>future-modern.md</code>{" "}
+              &quot;MVP Score&quot; for the full architecture.
+            </p>
+          </div>
+        );
+      })()}
 
       <Card className="mt-6 border-[#5070F0]/40">
         <CardEyebrow>Data participation</CardEyebrow>

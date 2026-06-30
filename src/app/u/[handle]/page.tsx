@@ -15,6 +15,7 @@ import { MOCK_PORTFOLIO } from "@/lib/mock-data/portfolio";
 import { aggregateRating } from "@/lib/mock-data/peer-reviews";
 import { testimonialsForUser } from "@/lib/mock-data/customer-feedback";
 import { epkForUser } from "@/lib/mock-data/artist-epk";
+import { mvpScoreForUser } from "@/lib/mock-data/mvp-scores";
 import {
   INDUSTRY_LABELS,
   canSendDirectMessage,
@@ -29,6 +30,7 @@ import { sendDirectMessage } from "@/lib/dm-actions";
 import { Card, CardEyebrow, CardTitle } from "@/components/Card";
 import { Avatar } from "@/components/Avatar";
 import { TierBadge } from "@/components/TierBadge";
+import { MvpCard } from "@/components/MvpCard";
 
 export default async function PublicProfilePage({
   params,
@@ -221,6 +223,36 @@ export default async function PublicProfilePage({
           </div>
         )}
       </section>
+
+      {(() => {
+        // MVP Score visibility: viewer must be a signed-in Member or admin
+        // (the existing isMember check covers both since signed-in === has
+        // a cooperative role). Target must have a published snapshot —
+        // Partner-tier members don't get one in the seed.
+        if (!isMember || !viewer) return null;
+        const mvpSnapshot = mvpScoreForUser(user.id);
+        if (!mvpSnapshot) return null;
+        const isSelfOrAdmin =
+          viewer.id === user.id || viewer.isAdmin === true;
+        const mode = isSelfOrAdmin ? "self" : "peer";
+        return (
+          <section className="mt-14">
+            <div className="flex items-baseline justify-between gap-3">
+              <h2 className="font-display text-2xl font-semibold">
+                MVP Score
+              </h2>
+              <span className="text-xs text-ink-faint">
+                {mode === "self"
+                  ? "Full self-view"
+                  : "Peer view · cooperative-internal"}
+              </span>
+            </div>
+            <div className="mt-4">
+              <MvpCard snapshot={mvpSnapshot} user={user} mode={mode} />
+            </div>
+          </section>
+        );
+      })()}
 
       {isMember && (
         <section className="mt-14">

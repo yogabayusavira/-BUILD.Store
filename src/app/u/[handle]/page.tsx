@@ -38,6 +38,7 @@ import { Card, CardEyebrow, CardTitle } from "@/components/Card";
 import { Avatar } from "@/components/Avatar";
 import { TierBadge } from "@/components/TierBadge";
 import { MvpCard } from "@/components/MvpCard";
+import { TradingCard, type TradingCardTier } from "@/components/TradingCard";
 
 /**
  * Direct-link to `/u/[handle]` always renders, but search engines only
@@ -104,11 +105,33 @@ export default async function PublicProfilePage({
   const showEpk =
     user.profileMode === "epk" && epk !== null && epk.status === "published";
 
+  // Trading-card tier — derived from MVP standing + Court eligibility.
+  // Partners (no snapshot) and provisional Members fall to "standard"
+  // — still a beautiful card, just no animated treatment. Future
+  // Modernist pool / promotion-eligible Members get "elevated". Champion's
+  // Court members get "holographic" with the animated sheen.
+  const mvpSnapshot = mvpScoreForUser(user.id);
+  const courtIds = new Set(championsCourtMembers(MOCK_MVP_SCORES, MOCK_USERS));
+  let cardTier: TradingCardTier = "standard";
+  if (courtIds.has(user.id)) {
+    cardTier = "holographic";
+  } else if (
+    mvpSnapshot &&
+    !mvpSnapshot.isProvisional &&
+    mvpSnapshot.ovr >= 75
+  ) {
+    cardTier = "elevated";
+  }
+
   return (
     <div className="mx-auto max-w-app px-6 py-12">
-      <header className="flex flex-col items-start gap-6 md:flex-row md:items-center">
-        <Avatar user={user} size="xl" />
-        <div>
+      <header className="flex flex-col items-start gap-6 md:flex-row md:items-start">
+        <TradingCard
+          user={user}
+          tier={cardTier}
+          className="w-full max-w-[280px] shrink-0"
+        />
+        <div className="flex-1">
           <h1 className="font-display text-4xl font-semibold md:text-5xl">
             {publicName(user)}
           </h1>

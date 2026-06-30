@@ -124,6 +124,22 @@ export interface User {
    * string[] for simplicity.
    */
   talentTags: string[];
+  /**
+   * Background-removed portrait for trading-card use. Full-body or 3/4
+   * body shot, subject isolated, transparent background. Surfaces on
+   * `/u/[handle]` hero and the MvpCard render the portrait against the
+   * FM brand backdrop instead of the photographer's environment.
+   *
+   * Distinct from `profileImageUrl` (standard avatar, can be any
+   * crop / background). Falls back to the Avatar component (profile
+   * image or initials) when null.
+   *
+   * Production swap pipeline: photographer captures the source image
+   * to the agreed brief; admin uploads to object storage; bg-removal
+   * pipeline (remove.bg or self-hosted U-2-Net) produces the
+   * transparent-bg variant; URL persists here.
+   */
+  avatarPortraitUrl: string | null;
   walletAddress: string | null; // ERC-6551 token-bound account address
   /**
    * User's externally-controlled EOA (MetaMask / Coinbase Wallet /

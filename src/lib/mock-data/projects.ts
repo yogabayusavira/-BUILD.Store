@@ -36,6 +36,9 @@ export const MOCK_PROJECTS: Project[] = [
     collectedAt: null,
     // Jamar owns the URL Media relationship — sole admin on this deal.
     adminUserIds: ["u_jamar"],
+    talentBaseAmount: null,
+    talentBonusAmount: null,
+    bonusGate: null,
     createdAt: "2026-04-05T00:00:00Z",
     updatedAt: "2026-04-05T00:00:00Z",
   },
@@ -61,6 +64,9 @@ export const MOCK_PROJECTS: Project[] = [
     // Jamar owns DCG; bringing in Chibu since she's running the smart-contract
     // negotiation. Even split at settle unless overridden.
     adminUserIds: ["u_jamar", "u_chibu"],
+    talentBaseAmount: null,
+    talentBonusAmount: null,
+    bonusGate: null,
     createdAt: "2026-04-12T00:00:00Z",
     updatedAt: "2026-04-12T00:00:00Z",
   },
@@ -89,6 +95,9 @@ export const MOCK_PROJECTS: Project[] = [
     // Rob introduced via DCG (also doing delivery — appears in both pools).
     // Jamar is the deal owner. 50/50 admin pool default.
     adminUserIds: ["u_rob", "u_jamar"],
+    talentBaseAmount: null,
+    talentBonusAmount: null,
+    bonusGate: null,
     createdAt: "2026-03-01T00:00:00Z",
     updatedAt: "2026-04-18T00:00:00Z",
   },
@@ -114,6 +123,9 @@ export const MOCK_PROJECTS: Project[] = [
     collectedAt: "2026-02-20T00:00:00Z",
     // Jamar introduced URL Media (per attribution ledger entry att_004).
     adminUserIds: ["u_jamar"],
+    talentBaseAmount: null,
+    talentBonusAmount: null,
+    bonusGate: null,
     createdAt: "2025-11-01T00:00:00Z",
     updatedAt: "2026-02-15T00:00:00Z",
   },
@@ -139,6 +151,9 @@ export const MOCK_PROJECTS: Project[] = [
     collectedAt: null,
     // Pre-vetting; admin team gets assigned during RFP review.
     adminUserIds: [],
+    talentBaseAmount: null,
+    talentBonusAmount: null,
+    bonusGate: null,
     createdAt: "2026-04-19T00:00:00Z",
     updatedAt: "2026-04-19T00:00:00Z",
   },
@@ -163,6 +178,9 @@ export const MOCK_PROJECTS: Project[] = [
     collectedAt: null,
     // Pre-vetting; admin team gets assigned during RFP review.
     adminUserIds: [],
+    talentBaseAmount: null,
+    talentBonusAmount: null,
+    bonusGate: null,
     createdAt: "2026-04-20T00:00:00Z",
     updatedAt: "2026-04-20T00:00:00Z",
   },
@@ -191,6 +209,9 @@ export const MOCK_PROJECTS: Project[] = [
     collectedAt: null,
     // Internal initiative — no commission to split.
     adminUserIds: [],
+    talentBaseAmount: null,
+    talentBonusAmount: null,
+    bonusGate: null,
     createdAt: "2026-04-18T00:00:00Z",
     updatedAt: "2026-04-18T00:00:00Z",
   },
@@ -215,6 +236,9 @@ export const MOCK_PROJECTS: Project[] = [
     collectedAt: null,
     // Internal initiative — no commission to split.
     adminUserIds: [],
+    talentBaseAmount: null,
+    talentBonusAmount: null,
+    bonusGate: null,
     createdAt: "2026-04-15T00:00:00Z",
     updatedAt: "2026-04-15T00:00:00Z",
   },
@@ -241,6 +265,9 @@ export const MOCK_PROJECTS: Project[] = [
     collectedAt: null,
     // Internal initiative — no commission to split.
     adminUserIds: [],
+    talentBaseAmount: null,
+    talentBonusAmount: null,
+    bonusGate: null,
     createdAt: "2026-03-20T00:00:00Z",
     updatedAt: "2026-04-22T00:00:00Z",
   },

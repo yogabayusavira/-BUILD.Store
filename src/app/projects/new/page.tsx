@@ -46,6 +46,10 @@ async function createInitiative(formData: FormData) {
     collectedAt: null,
     // Internal initiative — no commission to split.
     adminUserIds: [],
+    // Internal projects don't use the external-client base/bonus structure.
+    talentBaseAmount: null,
+    talentBonusAmount: null,
+    bonusGate: null,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   });

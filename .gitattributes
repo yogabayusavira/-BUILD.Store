@@ -1,0 +1,46 @@
+# Line-ending normalization for $BUILD.Store unified repo.
+#
+# Default: normalize to LF on commit, no automatic CRLF conversion on
+# checkout. Keeps the diff stable across Windows / macOS / Linux and
+# stops Git Bash on Windows from emitting "LF will be replaced by CRLF"
+# warnings on every `git add`.
+#
+# Per-file overrides for things that need native endings on their host
+# platform are listed below.
+
+* text=auto eol=lf
+
+# Source — always LF, regardless of platform.
+*.ts        text eol=lf
+*.tsx       text eol=lf
+*.js        text eol=lf
+*.mjs       text eol=lf
+*.json      text eol=lf
+*.css       text eol=lf
+*.md        text eol=lf
+*.html      text eol=lf
+
+# Shell scripts — LF (Bash / sh).
+*.sh        text eol=lf
+*.command   text eol=lf
+
+# Windows batch — needs CRLF or cmd.exe chokes on it.
+*.bat       text eol=crlf
+*.cmd       text eol=crlf
+
+# Binary assets — don't touch.
+*.png       binary
+*.jpg       binary
+*.jpeg      binary
+*.gif       binary
+*.webp      binary
+*.ico       binary
+*.pdf       binary
+*.woff      binary
+*.woff2     binary
+*.ttf       binary
+*.otf       binary
+*.zip       binary
+*.mp3       binary
+*.mp4       binary
+*.mov       binary

@@ -44,6 +44,11 @@ async function createRfp(formData: FormData) {
     collectedAt: null,
     // Admin team gets assigned during RFP review.
     adminUserIds: [],
+    // Comp structure assigned during quote-sheet approval. Sandbox leaves
+    // these null until a follow-up wires the base/bonus split into intake.
+    talentBaseAmount: null,
+    talentBonusAmount: null,
+    bonusGate: null,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
   });

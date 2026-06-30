@@ -285,8 +285,90 @@ export interface Project {
    * work). The two pools are independent.
    */
   adminUserIds: string[];
+  /**
+   * Compensation structure — base + performance ceiling (locked 2026-06-29).
+   *
+   * Talent comp on external client engagements is structured as guaranteed
+   * floor + earned ceiling, not flat above-asking. See `future-modern.md`
+   * "Compensation structure" section for the full principle.
+   *
+   * `talentBaseAmount` — guaranteed floor (low end of talent's asking range
+   *    or below, with consent). Released on standard milestone schedule.
+   *    Stored as USD string to match Drizzle numeric(12,2). Null = not yet
+   *    structured under base+bonus (legacy engagements predate the locked
+   *    structure).
+   *
+   * `talentBonusAmount` — earnable ceiling (delta to upper-end-of-asking +
+   *    any above-asking earnings, within the 85% talent allocation against
+   *    engagement revenue). Released at engagement close IF the bonus gate
+   *    clears. Stored as USD string. Null = no bonus tier on this contract.
+   *
+   * `bonusGate` — settlement-time gate config. Sandbox default is null,
+   *    which the split engine treats as the canonical gate from memory:
+   *    client rating ≥ 4 primary, PM 0.6 + peer 0.4 composite fallback at
+   *    30 days, default-release on internal-procedural-failure.
+   */
+  talentBaseAmount: string | null;
+  talentBonusAmount: string | null;
+  bonusGate: BonusReleaseGate | null;
   createdAt: string;
   updatedAt: string;
+}
+
+/**
+ * Bonus-release gate config for a Project. Per locked memory in
+ * `future-modern.md`, the canonical gate is:
+ *   1. Client rating ≥ `clientRatingThreshold` (default 4 on 5-star scale)
+ *      → release bonus.
+ *   2. If no client rating within `silenceWindowDays` (default 30) →
+ *      fallback to internal composite (PM rating × `pmWeight` + peer-review
+ *      average × `peerWeight`). Composite ≥ `compositeThreshold` → release.
+ *   3. If no client rating AND no internal signal → release by default
+ *      (talent doesn't pay for FM's internal procedural failure).
+ *
+ * Per-contract overrides allowed but expected to be rare.
+ */
+export interface BonusReleaseGate {
+  clientRatingThreshold: number; // default 4
+  silenceWindowDays: number; // default 30
+  pmWeight: number; // default 0.6
+  peerWeight: number; // default 0.4
+  compositeThreshold: number; // default 4 (same as client)
+}
+
+/**
+ * Default bonus-release gate per the canonical memory lock.
+ */
+export const CANONICAL_BONUS_GATE: BonusReleaseGate = {
+  clientRatingThreshold: 4,
+  silenceWindowDays: 30,
+  pmWeight: 0.6,
+  peerWeight: 0.4,
+  compositeThreshold: 4,
+};
+
+/**
+ * Engagement Recovery Pool — destination ledger for reclaimed bonus when
+ * the gate fails. Scoped to a single project. Drawable to pay corrective
+ * hires for the same client engagement that disappointed. Residue at
+ * engagement close folds back to treasury.
+ *
+ * Per locked memory: "we billed the upper end, this person didn't earn
+ * their pay, so they got the minimum and we used the extra to hire someone
+ * else." This ledger captures that extra.
+ */
+export interface EngagementRecoveryPool {
+  id: string;
+  projectId: string;
+  /** USD reclaimed from unearned bonus. Numeric(12,2) shape. */
+  balanceUsd: string;
+  /** USD already drawn against the pool for corrective hires. */
+  drawnUsd: string;
+  /** Pool lifecycle. `open` = engagement still active; `closed` = residue
+   *  folded back to treasury, no more draws permitted. */
+  status: "open" | "closed";
+  createdAt: string;
+  closedAt: string | null;
 }
 
 /**
@@ -2277,3 +2359,110 @@ export interface InboundSubmission {
   createdAt: string;
   updatedAt: string;
 }
+
+/* ------------------------------------------------------------------ */
+/*  MVP Score — cooperative compliance + recognition instrument        */
+/*                                                                     */
+/*  Full architectural memo lives in `future-modern.md` "MVP Score"    */
+/*  section. Key contracts re-stated here so this file is self-        */
+/*  documenting:                                                       */
+/*                                                                     */
+/*    - Single OVR 0-99, weighted average of seven sub-ratings.        */
+/*    - 12-month rolling window; last 3 months weighted 2x in compute. */
+/*    - Compliance penalty: -9 OVR per violation for 90 days, stacks.  */
+/*    - Threshold ladder gates Champion's Court (top 10% AND ≥ 90),    */
+/*      Future Modernist candidacy (80-89), Partner→Member promotion   */
+/*      eligibility (75+ sustained), Member good standing (70-79),     */
+/*      probation/removal review (65-70), accelerated removal (<65).   */
+/*    - Visibility: self always, peer Members see OVR + violation      */
+/*      trail (not sub-breakdown), admin sees everything, public no.   */
+/*    - Recompute cadence: daily compute, weekly publish (frozen).     */
+/*                                                                     */
+/*  Sandbox computation is a deterministic stub against seeded inputs. */
+/*  Production swap rebuilds from real attribution / peer review /     */
+/*  client rating / milestone-hit data on the daily refresh job.       */
+/* ------------------------------------------------------------------ */
+
+/**
+ * Sub-rating categories. Each scored 0-99; rolled into OVR via
+ * `MVP_WEIGHTS` (see `lib/mvp-score.ts`).
+ */
+export type MvpSubRating =
+  | "quality" // peer craft + client rating + brand-fit
+  | "outcomes" // bonus-gate clear rate + attribution share
+  | "reliability" // milestone-hit + deadline + minutes completeness
+  | "hustle" // inbound response time + brief acceptance + volunteer
+  | "collaboration" // peer collaboration sub-score
+  | "attendance" // meeting attendance once minutes rail is live
+  | "referrals_bd"; // referrer attributions converted to revenue
+
+export const MVP_SUB_RATING_LABELS: Record<MvpSubRating, string> = {
+  quality: "Quality",
+  outcomes: "Outcomes",
+  reliability: "Reliability",
+  hustle: "Hustle",
+  collaboration: "Collaboration",
+  attendance: "Attendance",
+  referrals_bd: "Referrals / BD",
+};
+
+/**
+ * One stacked compliance penalty row. Each violation = -9 OVR for 90 days
+ * from `appliedAt`. Penalties roll off independently. Stacks allowed.
+ *
+ * `reason` is admin-facing free-text; not surfaced to peers (the OVR drop
+ * + count of active penalties is the peer-visible signal, per locked
+ * visibility rules).
+ */
+export interface MvpCompliancePenalty {
+  id: string;
+  userId: string;
+  appliedAt: string;
+  /** Auto-computed: appliedAt + 90 days. Penalty inactive after this. */
+  expiresAt: string;
+  /** Always -9 in the canonical mechanic; field kept for future tuning. */
+  ovrImpact: number;
+  reason: string;
+}
+
+/**
+ * MVP Score snapshot for a user, published weekly. Computed daily under
+ * the hood from sub-rating inputs; the publish step freezes the score
+ * for the week so cards don't jitter hourly.
+ */
+export interface MvpScore {
+  userId: string;
+  /** Composite 0-99. Computed from `subRatings` via `MVP_WEIGHTS`, then
+   *  reduced by active compliance penalties. */
+  ovr: number;
+  subRatings: Record<MvpSubRating, number>;
+  /** Active penalties currently dragging OVR down. Empty array = clean. */
+  activePenalties: MvpCompliancePenalty[];
+  /** Period window the inputs were drawn from (rolling 12 months). */
+  periodStart: string;
+  periodEnd: string;
+  /** When this snapshot was published. Frozen for the week. */
+  publishedAt: string;
+}
+
+/**
+ * Threshold bands for the MVP Score ladder. Champion's Court additionally
+ * requires top-10% rank among Members; this enum captures only the OVR
+ * gating.
+ */
+export type MvpStandingBand =
+  | "champions_court_eligible" // OVR ≥ 90 (top 10% gate applied at recognition surface)
+  | "future_modernist_pool" // 80-89
+  | "promotion_eligible" // 75-79 sustained
+  | "good_standing" // 70-79
+  | "probation_review" // 65-70
+  | "removal_accelerated"; // <65
+
+export const MVP_STANDING_LABELS: Record<MvpStandingBand, string> = {
+  champions_court_eligible: "Champion's Court eligible",
+  future_modernist_pool: "Future Modernist pool",
+  promotion_eligible: "Promotion eligible",
+  good_standing: "Good standing",
+  probation_review: "Probation / removal review",
+  removal_accelerated: "Removal accelerated",
+};

@@ -327,4 +327,38 @@ export const MOCK_USERS: User[] = [
     createdAt: "2022-09-01T00:00:00Z",
     updatedAt: "2026-05-04T00:00:00Z",
   },
+
+  // Sunny Su — Member-tier (promoted from Partner). Confirmed beta tester.
+  // Brand + UI/UX + Product Design at paradigmid.com. He/him — flagged
+  // by Jamar so future sessions don't drift.
+  {
+    id: "u_sunny",
+    email: "sunny@paradigmid.com",
+    handle: "sunny",
+    firstName: "Sunny",
+    lastName: "Su",
+    profileImageUrl: null,
+    membershipTier: "member",
+    primaryIndustry: "creative-media",
+    secondaryIndustries: ["professional-services"],
+    dataParticipation: false,
+    skills: ["brand", "ui/ux", "product design"],
+    discipline: "Brand + UI/UX + Product Designer",
+    profileMode: "contributor",
+    bio: "paradigmid.com. Design lead across brand + product surfaces. Beta tester on the platform pre-launch.",
+    portfolioUrl: "https://paradigmid.com",
+    buildTokenBalance: "1800.00000000",
+    isAdmin: false,
+    talentTags: [],
+    avatarPortraitUrl: null,
+    profilePublic: true,
+    walletAddress: "0x6551000000000000000000000000000000000014",
+    connectedWalletAddress: null,
+    connectedWalletProvider: null,
+    walletConnectedAt: null,
+    stripeAccountId: null,
+    stripePayoutsEnabled: false,
+    createdAt: "2025-11-01T00:00:00Z",
+    updatedAt: "2026-06-30T00:00:00Z",
+  },
 ];

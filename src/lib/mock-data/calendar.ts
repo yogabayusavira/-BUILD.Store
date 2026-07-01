@@ -96,6 +96,16 @@ export const MOCK_AVAILABILITY: CalendarAvailability[] = [
     timezone: "America/Los_Angeles",
     createdAt: "2026-05-01T00:00:00Z",
   })),
+  // Sunny — Mon-Fri 11am-4pm (design lens works best in the middle of the day).
+  ...[1, 2, 3, 4, 5].map((day, idx) => ({
+    id: `av_sunny_${idx}`,
+    userId: "u_sunny",
+    dayOfWeek: day as 1 | 2 | 3 | 4 | 5,
+    startMinute: hm(11),
+    endMinute: hm(16),
+    timezone: "America/New_York",
+    createdAt: "2026-05-15T00:00:00Z",
+  })),
 ];
 
 /* ------------------------------------------------------------------ */

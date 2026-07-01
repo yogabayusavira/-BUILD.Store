@@ -91,6 +91,7 @@ export async function handleSignup(formData: FormData) {
     assignedAdminId: null,
     triageNote: null,
     deepLinkHref: null,
+    linkedResourceId: null,
     derived: false,
   });
 

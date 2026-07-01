@@ -2434,6 +2434,14 @@ export interface InboundSubmission {
   triageNote: string | null;
   /** Deep-link to the typed admin surface for this submission. */
   deepLinkHref: string | null;
+  /**
+   * Optional foreign key to another canonical resource this submission
+   * points at — e.g., a `booking_request` links to the tentative
+   * `CalendarMeeting` that admin acts on when they approve or decline.
+   * Callers writing custom submission kinds can populate this to skip
+   * the usual `body` / triage-note parsing.
+   */
+  linkedResourceId: string | null;
   /** True when this row was projected from another canonical store. */
   derived: boolean;
   createdAt: string;

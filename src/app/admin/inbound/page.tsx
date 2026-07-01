@@ -28,6 +28,10 @@ import {
   appendInboundKeywordTags,
 } from "@/lib/inbound-submission-actions";
 import {
+  approveBookingRequest,
+  declineBookingRequest,
+} from "@/lib/epk-booking-actions";
+import {
   INBOUND_SUBMISSION_KIND_LABELS,
   INBOUND_SUBMISSION_STATUS_LABELS,
   INDUSTRY_LABELS,
@@ -261,6 +265,66 @@ function SubmissionRow({
             .join(", ")}
         </p>
       )}
+
+      {/* Booking-request-specific approval controls. Only shows when
+          the row is a booking_request AND still in a decidable state.
+          Approve confirms the FM agent's side of the linked meeting +
+          moves the submission to converted; the attendee (artist) then
+          confirms from their own /profile/calendar. Decline cancels
+          the tentative meeting + closes the submission. */}
+      {row.kind === "booking_request" &&
+        (row.status === "new" || row.status === "in_triage") && (
+          <div
+            className="mt-4 rounded-lg border-l-4 p-3 text-xs"
+            style={{
+              borderColor: "#5070F0",
+              backgroundColor: "rgba(80, 112, 240, 0.06)",
+            }}
+          >
+            <span
+              className="text-[11px] uppercase tracking-wider"
+              style={{ color: "#5070F0" }}
+            >
+              EPK booking · approve or decline
+            </span>
+            <p className="mt-1 text-ink-muted">
+              A tentative meeting is on the FM agent&apos;s calendar
+              waiting on your decision. Approve routes it forward for
+              the artist to confirm; decline cancels the meeting +
+              closes this row.
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <form action={approveBookingRequest}>
+                <input type="hidden" name="submissionId" value={row.id} />
+                <button
+                  type="submit"
+                  className="rounded-full px-3 py-1 text-[11px] font-medium text-white"
+                  style={{ backgroundColor: "#007048" }}
+                >
+                  Approve → route to attendee
+                </button>
+              </form>
+              <form
+                action={declineBookingRequest}
+                className="flex flex-wrap items-end gap-1"
+              >
+                <input type="hidden" name="submissionId" value={row.id} />
+                <input
+                  name="reason"
+                  type="text"
+                  placeholder="Reason (optional)"
+                  className="rounded-lg border border-[var(--surface-border)] bg-[var(--surface)] px-2 py-1 text-[11px]"
+                />
+                <button
+                  type="submit"
+                  className="rounded-full border border-[var(--surface-border)] px-3 py-1 text-[11px] hover:border-brand-magenta hover:text-brand-magenta"
+                >
+                  Decline
+                </button>
+              </form>
+            </div>
+          </div>
+        )}
 
       <div className="mt-4 grid gap-4 md:grid-cols-2">
         <div className="rounded-lg border border-[var(--surface-border)] p-3">

@@ -196,6 +196,21 @@ const SNAPSHOT_INPUTS: Array<{
       referrals_bd: 40,
     }),
   },
+  {
+    // Sunny — Design / Brand UX Member. Beta tester pre-launch (real
+    // labor on an unfinished platform). Sub-ratings land in the
+    // promotion-eligible / future-modernist boundary.
+    userId: "u_sunny",
+    subRatings: subs({
+      quality: 87,
+      outcomes: 78,
+      reliability: 82,
+      hustle: 84,
+      collaboration: 88,
+      attendance: 82,
+      referrals_bd: 70,
+    }),
+  },
 ];
 
 export const MOCK_MVP_SCORES: MvpScore[] = SNAPSHOT_INPUTS.map((row) =>

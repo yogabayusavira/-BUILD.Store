@@ -21,10 +21,14 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
+import { requireAdmin } from "@/lib/auth-stub";
 import { MOCK_USERS } from "@/lib/mock-data/users";
 import { epkForUser } from "@/lib/mock-data/artist-epk";
-import { MOCK_MEETINGS } from "@/lib/mock-data/calendar";
-import { pushInboundSubmission } from "@/lib/mock-data/inbound-submissions";
+import { MOCK_MEETINGS, meetingById } from "@/lib/mock-data/calendar";
+import {
+  MOCK_INBOUND_SUBMISSIONS,
+  pushInboundSubmission,
+} from "@/lib/mock-data/inbound-submissions";
 import type { CalendarMeeting } from "@/lib/types";
 
 function newId(prefix: string): string {
@@ -119,8 +123,9 @@ export async function createEpkBookingRequest(formData: FormData) {
     body: brief + `\n\nProposed slot: ${startsAt} → ${endsAt}`,
     attachments: [],
     assignedAdminId: agentId,
-    triageNote: `Tentative meeting created (id ${meeting.id}). Approve to forward to ${artist.firstName ?? artist.handle} for confirmation; decline to reject the brief.`,
+    triageNote: `Tentative meeting created. Approve to forward to ${artist.firstName ?? artist.handle} for confirmation; decline to reject the brief.`,
     deepLinkHref: "/admin/team-meetings",
+    linkedResourceId: meeting.id,
     derived: false,
   });
 
@@ -128,3 +133,80 @@ export async function createEpkBookingRequest(formData: FormData) {
   revalidatePath("/admin/inbound");
   revalidatePath("/profile/calendar");
 }
+
+/**
+ * Admin approves a booking_request. Marks the inbound row `converted`
+ * + updates the associated meeting so the FM agent (organizer) is
+ * confirmed. Artist still needs to confirm on their calendar surface
+ * for the meeting to reach fully-confirmed state.
+ */
+export async function approveBookingRequest(formData: FormData) {
+  const admin = await requireAdmin();
+  const submissionId = String(formData.get("submissionId") ?? "").trim();
+  const submission = MOCK_INBOUND_SUBMISSIONS.find((s) => s.id === submissionId);
+  if (!submission) throw new Error("Submission not found");
+  if (submission.kind !== "booking_request") {
+    throw new Error("This action is for booking requests only.");
+  }
+  if (!submission.linkedResourceId) {
+    throw new Error(
+      "Booking submission has no linked meeting — cannot route forward.",
+    );
+  }
+  const meeting = meetingById(submission.linkedResourceId);
+  if (!meeting) throw new Error("Linked meeting not found");
+
+  // FM agent (the pmUserId) confirms; artist attendee still pending.
+  if (meeting.pmUserId && !meeting.confirmedByAttendeeIds.includes(meeting.pmUserId)) {
+    meeting.confirmedByAttendeeIds = [
+      ...meeting.confirmedByAttendeeIds,
+      meeting.pmUserId,
+    ];
+  }
+  meeting.updatedAt = new Date().toISOString();
+
+  submission.status = "converted";
+  submission.updatedAt = new Date().toISOString();
+  submission.triageNote =
+    (submission.triageNote ?? "") +
+    ` [Approved by admin ${admin.id} — forwarded to attendee for confirmation.]`;
+
+  revalidatePath("/admin/inbound");
+  revalidatePath("/profile/calendar");
+  revalidatePath("/calendar");
+}
+
+/**
+ * Admin declines a booking_request. Cancels the tentative meeting and
+ * marks the submission closed_no_action.
+ */
+export async function declineBookingRequest(formData: FormData) {
+  const admin = await requireAdmin();
+  const submissionId = String(formData.get("submissionId") ?? "").trim();
+  const reason = String(formData.get("reason") ?? "").trim();
+  const submission = MOCK_INBOUND_SUBMISSIONS.find((s) => s.id === submissionId);
+  if (!submission) throw new Error("Submission not found");
+  if (submission.kind !== "booking_request") {
+    throw new Error("This action is for booking requests only.");
+  }
+
+  if (submission.linkedResourceId) {
+    const meeting = meetingById(submission.linkedResourceId);
+    if (meeting && meeting.status !== "cancelled") {
+      meeting.status = "cancelled";
+      meeting.updatedAt = new Date().toISOString();
+    }
+  }
+  submission.status = "closed_no_action";
+  submission.triageNote =
+    (submission.triageNote ?? "") +
+    ` [Declined by admin ${admin.id}${reason ? `: ${reason}` : ""}]`;
+  submission.updatedAt = new Date().toISOString();
+
+  revalidatePath("/admin/inbound");
+  revalidatePath("/profile/calendar");
+  revalidatePath("/calendar");
+}
+
+void MOCK_MEETINGS;
+void MOCK_USERS;

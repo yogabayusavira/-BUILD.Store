@@ -2173,7 +2173,11 @@ export type NotificationKind =
   | "milestone_due_soon"
   | "milestone_overdue"
   | "milestone_status_changed"
-  | "milestone_blocked";
+  | "milestone_blocked"
+  | "booking_request_received"
+  | "booking_request_approved"
+  | "booking_request_declined"
+  | "booking_confirmed";
 
 export const NOTIFICATION_KIND_LABELS: Record<NotificationKind, string> = {
   order_status: "Order update",
@@ -2196,6 +2200,10 @@ export const NOTIFICATION_KIND_LABELS: Record<NotificationKind, string> = {
   epk_submitted: "EPK submitted",
   epk_published: "EPK published",
   epk_revision_requested: "EPK revision requested",
+  booking_request_received: "Booking request",
+  booking_request_approved: "Booking approved",
+  booking_request_declined: "Booking declined",
+  booking_confirmed: "Booking confirmed",
   milestone_due_soon: "Milestone due soon",
   milestone_overdue: "Milestone overdue",
   milestone_status_changed: "Milestone status",

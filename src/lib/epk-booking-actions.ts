@@ -29,12 +29,33 @@ import {
   MOCK_INBOUND_SUBMISSIONS,
   pushInboundSubmission,
 } from "@/lib/mock-data/inbound-submissions";
-import type { CalendarMeeting } from "@/lib/types";
+import { MOCK_NOTIFICATIONS } from "@/lib/mock-data/notifications";
+import type { CalendarMeeting, Notification, NotificationKind } from "@/lib/types";
 
 function newId(prefix: string): string {
   return `${prefix}_${Date.now().toString(36)}_${Math.random()
     .toString(36)
     .slice(2, 5)}`;
+}
+
+function pushNotification(
+  kind: NotificationKind,
+  userId: string,
+  title: string,
+  body: string,
+  href: string,
+): void {
+  const ntf: Notification = {
+    id: newId(`ntf_${kind}`),
+    userId,
+    kind,
+    title,
+    body,
+    href,
+    createdAt: new Date().toISOString(),
+    readAt: null,
+  };
+  MOCK_NOTIFICATIONS.push(ntf);
 }
 
 /**
@@ -129,9 +150,21 @@ export async function createEpkBookingRequest(formData: FormData) {
     derived: false,
   });
 
+  // Notify all admins that a booking request landed.
+  for (const admin of MOCK_USERS.filter((u) => u.isAdmin)) {
+    pushNotification(
+      "booking_request_received",
+      admin.id,
+      `Booking request for ${artist.firstName ?? artist.handle}`,
+      `${requesterName}${requesterCompany ? ` (${requesterCompany})` : ""} submitted a booking request. Brief: ${brief.slice(0, 140)}${brief.length > 140 ? "…" : ""}`,
+      "/admin/inbound",
+    );
+  }
+
   revalidatePath(`/u/${artist.handle}`);
   revalidatePath("/admin/inbound");
   revalidatePath("/profile/calendar");
+  revalidatePath("/notifications");
 }
 
 /**
@@ -171,14 +204,29 @@ export async function approveBookingRequest(formData: FormData) {
     (submission.triageNote ?? "") +
     ` [Approved by admin ${admin.id} — forwarded to attendee for confirmation.]`;
 
+  // Notify the artist attendee(s) — anyone in the meeting except the PM.
+  for (const attendeeId of meeting.attendeeIds) {
+    if (attendeeId === meeting.pmUserId) continue;
+    pushNotification(
+      "booking_request_approved",
+      attendeeId,
+      `Booking request forwarded to you`,
+      `${meeting.externalClientName ?? "A client"} wants to meet. Admin reviewed the brief and forwarded for your confirmation. Confirm or decline from your calendar.`,
+      "/profile/calendar",
+    );
+  }
+
   revalidatePath("/admin/inbound");
   revalidatePath("/profile/calendar");
   revalidatePath("/calendar");
+  revalidatePath("/notifications");
 }
 
 /**
  * Admin declines a booking_request. Cancels the tentative meeting and
- * marks the submission closed_no_action.
+ * marks the submission closed_no_action. Sandbox stub: production
+ * would fire a decline email to the external requester's address; we
+ * log a notification to admins as the audit trail.
  */
 export async function declineBookingRequest(formData: FormData) {
   const admin = await requireAdmin();
@@ -203,9 +251,68 @@ export async function declineBookingRequest(formData: FormData) {
     ` [Declined by admin ${admin.id}${reason ? `: ${reason}` : ""}]`;
   submission.updatedAt = new Date().toISOString();
 
+  // Sandbox stub: notify admin pool as the audit trail. Production
+  // dispatches a decline email to submission.submitterEmail with the
+  // reason (or a generic decline copy if no reason provided).
+  for (const a of MOCK_USERS.filter((u) => u.isAdmin)) {
+    pushNotification(
+      "booking_request_declined",
+      a.id,
+      `Booking declined: ${submission.submitter}`,
+      `Booking request declined${reason ? `. Reason: ${reason}` : ""}. Production sends the decline email to ${submission.submitterEmail ?? "(no email on file)"}.`,
+      "/admin/inbound",
+    );
+  }
+
   revalidatePath("/admin/inbound");
   revalidatePath("/profile/calendar");
   revalidatePath("/calendar");
+  revalidatePath("/notifications");
+}
+
+/**
+ * Wraps `confirmMeeting` from `calendar-actions.ts` with a booking-
+ * flow notification: when the artist confirms a booking meeting, fire
+ * a `booking_confirmed` notification to the admin pool + queue an
+ * external requester email (sandbox stub). Callers that want the
+ * generic confirm behavior for non-booking meetings should still use
+ * `confirmMeeting` directly.
+ */
+export async function confirmBookingMeeting(formData: FormData) {
+  const me = (await import("@/lib/auth-stub").then((m) => m.getCurrentUser()));
+  if (!me) throw new Error("Sign in required");
+  const meetingId = String(formData.get("id") ?? "").trim();
+  const meeting = meetingById(meetingId);
+  if (!meeting) throw new Error("Meeting not found");
+  if (!meeting.attendeeIds.includes(me.id)) {
+    throw new Error("You're not an attendee on this meeting.");
+  }
+  if (!meeting.confirmedByAttendeeIds.includes(me.id)) {
+    meeting.confirmedByAttendeeIds = [...meeting.confirmedByAttendeeIds, me.id];
+  }
+  const allConfirmed = meeting.attendeeIds.every((a) =>
+    meeting.confirmedByAttendeeIds.includes(a),
+  );
+  if (allConfirmed) meeting.status = "confirmed";
+  meeting.updatedAt = new Date().toISOString();
+
+  // Notify admin pool + queue external email stub only when this is a
+  // booking-shape meeting (external_client with a linked inbound row).
+  if (meeting.kind === "external_client" && meeting.externalClientEmail) {
+    for (const a of MOCK_USERS.filter((u) => u.isAdmin)) {
+      pushNotification(
+        "booking_confirmed",
+        a.id,
+        `Booking confirmed with ${meeting.externalClientName ?? "client"}`,
+        `${meeting.title} — production dispatches confirmation email to ${meeting.externalClientEmail}.`,
+        "/admin/inbound",
+      );
+    }
+  }
+
+  revalidatePath("/profile/calendar");
+  revalidatePath("/calendar");
+  revalidatePath("/notifications");
 }
 
 void MOCK_MEETINGS;

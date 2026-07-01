@@ -70,35 +70,6 @@ export const MOCK_TRANSACTIONS: TokenTransaction[] = [
     createdAt: "2026-02-18T00:00:00Z",
   },
 
-  // ── p_004 (URL Media editorial — Aliza solo, $12k collected, base $8k + bonus $2k)
-  // Comp structure released; talent sees both legs as distinct rows so
-  // the conditioning is visible.
-  {
-    id: "tx_p004_base",
-    userId: "u_aliza",
-    amount: "12000.00000000",
-    type: "project_completion",
-    projectId: "p_004",
-    description: "Base — URL Media editorial series (low end of asking).",
-    transactionHash: null,
-    compStage: "base",
-    withholdReason: null,
-    createdAt: "2026-02-20T15:00:00Z",
-  },
-  {
-    id: "tx_p004_bonus",
-    userId: "u_aliza",
-    amount: "3000.00000000",
-    type: "project_completion",
-    projectId: "p_004",
-    description:
-      "Bonus released — URL Media editorial series. Client rated 5★ (gate cleared).",
-    transactionHash: null,
-    compStage: "bonus_released",
-    withholdReason: null,
-    createdAt: "2026-02-28T16:00:00Z",
-  },
-
   // Illustrative withheld-bonus row (Rob, hypothetical prior engagement).
   // Demonstrates the third compStage state: bonus reclaimed to the
   // engagement recovery pool when the gate didn't clear. Talent sees

@@ -26,6 +26,10 @@ import {
 import {
   MOCK_FUTURE_MODERNIST_RECOGNITIONS,
 } from "@/lib/mock-data/future-modernist-recognitions";
+import {
+  logAuditEvent,
+  snapshotActorRole,
+} from "@/lib/mock-data/audit-log";
 import { championsCourtMembers } from "@/lib/mvp-score";
 import { deriveTradingCardTier } from "@/components/TradingCard";
 import type { MemberCanonization } from "@/lib/types";
@@ -42,7 +46,7 @@ function newCanonizationId(userId: string, year: number): string {
  * Production: also queues the on-chain mint per new row.
  */
 export async function canonizeYear(formData: FormData) {
-  await requireAdmin();
+  const admin = await requireAdmin();
   const yearRaw = Number(formData.get("year") ?? "0");
   if (!Number.isFinite(yearRaw) || yearRaw < 2020 || yearRaw > 2100) {
     throw new Error("Year must be a valid number.");
@@ -106,6 +110,22 @@ export async function canonizeYear(formData: FormData) {
     };
     MOCK_CANONIZATIONS.push(row);
     createdCount++;
+
+    logAuditEvent({
+      actorUserId: admin.id,
+      actorRoleSnapshot: snapshotActorRole(admin),
+      action: "canonization.frozen",
+      resourceKind: "canonization",
+      resourceId: row.id,
+      before: null,
+      after: {
+        userId: row.userId,
+        year: row.year,
+        tier: row.tier,
+        ovr: row.ovr,
+        recognitionCount: row.recognitionIds.length,
+      },
+    });
   }
 
   revalidatePath("/admin/mvp/canonization");
@@ -122,12 +142,23 @@ export async function canonizeYear(formData: FormData) {
  * cards ship without one.
  */
 export async function setCanonizationCaption(formData: FormData) {
-  await requireAdmin();
+  const admin = await requireAdmin();
   const id = String(formData.get("id") ?? "").trim();
   const caption = String(formData.get("caption") ?? "").trim();
   const row = MOCK_CANONIZATIONS.find((c) => c.id === id);
   if (!row) throw new Error("Canonization not found");
+  const before = row.caption;
   row.caption = caption.length === 0 ? null : caption;
+
+  logAuditEvent({
+    actorUserId: admin.id,
+    actorRoleSnapshot: snapshotActorRole(admin),
+    action: "canonization.caption_updated",
+    resourceKind: "canonization",
+    resourceId: row.id,
+    before: { caption: before },
+    after: { caption: row.caption },
+  });
 
   const target = MOCK_USERS.find((u) => u.id === row.userId);
   revalidatePath("/admin/mvp/canonization");

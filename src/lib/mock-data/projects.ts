@@ -132,13 +132,17 @@ export const MOCK_PROJECTS: Project[] = [
     collectedAt: "2026-02-20T00:00:00Z",
     // Jamar introduced URL Media (per attribution ledger entry att_004).
     adminUserIds: ["u_jamar"],
-    // Comp structure example for the settlement bonus-release demo:
+    // Comp structure example for the settlement UI demo:
     // Talent quoted $8k-$10k asking; base anchored to low end, bonus is
-    // the delta to upper end. 5★ client rating on file → gate releases.
+    // the delta to upper end. bonusDecision stays "pending" so admin
+    // can walk through the settle flow live. Sandbox illustration only —
+    // this engagement didn't actually route through comp structure in
+    // reality (comp system didn't exist when p_004 settled). Wired up
+    // here so the UI has something to render against.
     talentBaseAmount: "8000.00",
     talentBonusAmount: "2000.00",
     bonusGate: null, // null → uses CANONICAL_BONUS_GATE
-    pmEngagementRating: null, // PM hasn't captured yet; demo will show fallback math
+    pmEngagementRating: null,
     bonusDecision: "pending",
     bonusDecidedAt: null,
     createdAt: "2025-11-01T00:00:00Z",

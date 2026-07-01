@@ -23,6 +23,10 @@ import {
   MOCK_MVP_PENALTIES,
   MOCK_MVP_SCORES,
 } from "@/lib/mock-data/mvp-scores";
+import {
+  logAuditEvent,
+  snapshotActorRole,
+} from "@/lib/mock-data/audit-log";
 import { buildSnapshot } from "@/lib/mvp-score";
 import {
   MVP_VIOLATION_DURATION_DAYS,
@@ -70,7 +74,7 @@ function recomputeSnapshot(userId: string): void {
  * of penalties via count, never the reason).
  */
 export async function applyCompliancePenalty(formData: FormData) {
-  await requireAdmin();
+  const admin = await requireAdmin();
   const userId = String(formData.get("userId") ?? "").trim();
   const reason = String(formData.get("reason") ?? "").trim();
   if (!userId) throw new Error("userId is required");
@@ -94,6 +98,21 @@ export async function applyCompliancePenalty(formData: FormData) {
   MOCK_MVP_PENALTIES.push(penalty);
   recomputeSnapshot(userId);
 
+  logAuditEvent({
+    actorUserId: admin.id,
+    actorRoleSnapshot: snapshotActorRole(admin),
+    action: "mvp.compliance_penalty_applied",
+    resourceKind: "mvp_penalty",
+    resourceId: penalty.id,
+    before: null,
+    after: {
+      userId,
+      ovrImpact: penalty.ovrImpact,
+      expiresAt: penalty.expiresAt,
+    },
+    reason,
+  });
+
   // Every surface that renders MVP signal needs to refresh.
   revalidatePath("/admin/mvp");
   revalidatePath(`/admin/mvp/${userId}`);
@@ -112,7 +131,7 @@ export async function applyCompliancePenalty(formData: FormData) {
  * to direct edit on the snapshot inputs.
  */
 export async function setSubRating(formData: FormData) {
-  await requireAdmin();
+  const admin = await requireAdmin();
   const userId = String(formData.get("userId") ?? "").trim();
   const subRating = String(formData.get("subRating") ?? "").trim();
   const raw = Number(formData.get("value") ?? "0");
@@ -137,8 +156,21 @@ export async function setSubRating(formData: FormData) {
   const snapshot = MOCK_MVP_SCORES.find((s) => s.userId === userId);
   if (!snapshot) throw new Error("Snapshot not found for user");
 
-  snapshot.subRatings[subRating as keyof typeof snapshot.subRatings] = Math.round(raw);
+  const key = subRating as keyof typeof snapshot.subRatings;
+  const previous = snapshot.subRatings[key];
+  const rounded = Math.round(raw);
+  snapshot.subRatings[key] = rounded;
   recomputeSnapshot(userId);
+
+  logAuditEvent({
+    actorUserId: admin.id,
+    actorRoleSnapshot: snapshotActorRole(admin),
+    action: "mvp.sub_rating_set",
+    resourceKind: "mvp_score",
+    resourceId: userId,
+    before: { [subRating]: previous },
+    after: { [subRating]: rounded },
+  });
 
   const target = MOCK_USERS.find((u) => u.id === userId);
   revalidatePath("/admin/mvp");
@@ -155,7 +187,7 @@ export async function setSubRating(formData: FormData) {
  * received. Sandbox: single-click admin promotion with no gate.
  */
 export async function promoteFromProvisional(formData: FormData) {
-  await requireAdmin();
+  const admin = await requireAdmin();
   const userId = String(formData.get("userId") ?? "").trim();
   if (!userId) throw new Error("userId is required");
   const snapshot = MOCK_MVP_SCORES.find((s) => s.userId === userId);
@@ -165,6 +197,16 @@ export async function promoteFromProvisional(formData: FormData) {
   }
   snapshot.isProvisional = false;
   recomputeSnapshot(userId);
+
+  logAuditEvent({
+    actorUserId: admin.id,
+    actorRoleSnapshot: snapshotActorRole(admin),
+    action: "mvp.provisional_promoted",
+    resourceKind: "mvp_score",
+    resourceId: userId,
+    before: { isProvisional: true },
+    after: { isProvisional: false },
+  });
 
   const target = MOCK_USERS.find((u) => u.id === userId);
   revalidatePath("/admin/mvp");
@@ -180,13 +222,24 @@ export async function promoteFromProvisional(formData: FormData) {
  * and the OVR isn't trustworthy yet).
  */
 export async function demoteToProvisional(formData: FormData) {
-  await requireAdmin();
+  const admin = await requireAdmin();
   const userId = String(formData.get("userId") ?? "").trim();
   if (!userId) throw new Error("userId is required");
   const snapshot = MOCK_MVP_SCORES.find((s) => s.userId === userId);
   if (!snapshot) throw new Error("Snapshot not found");
+  const wasProvisional = snapshot.isProvisional;
   snapshot.isProvisional = true;
   recomputeSnapshot(userId);
+
+  logAuditEvent({
+    actorUserId: admin.id,
+    actorRoleSnapshot: snapshotActorRole(admin),
+    action: "mvp.provisional_demoted",
+    resourceKind: "mvp_score",
+    resourceId: userId,
+    before: { isProvisional: wasProvisional },
+    after: { isProvisional: true },
+  });
 
   const target = MOCK_USERS.find((u) => u.id === userId);
   revalidatePath("/admin/mvp");
@@ -205,14 +258,32 @@ export async function demoteToProvisional(formData: FormData) {
  * ledger posture. Sandbox simplifies to in-place removal.
  */
 export async function rescindCompliancePenalty(formData: FormData) {
-  await requireAdmin();
+  const admin = await requireAdmin();
   const penaltyId = String(formData.get("penaltyId") ?? "").trim();
   if (!penaltyId) throw new Error("penaltyId is required");
   const idx = MOCK_MVP_PENALTIES.findIndex((p) => p.id === penaltyId);
   if (idx < 0) throw new Error("Penalty not found");
-  const userId = MOCK_MVP_PENALTIES[idx].userId;
+  const original = MOCK_MVP_PENALTIES[idx];
+  const userId = original.userId;
   MOCK_MVP_PENALTIES.splice(idx, 1);
   recomputeSnapshot(userId);
+
+  logAuditEvent({
+    actorUserId: admin.id,
+    actorRoleSnapshot: snapshotActorRole(admin),
+    action: "mvp.compliance_penalty_rescinded",
+    resourceKind: "mvp_penalty",
+    resourceId: penaltyId,
+    before: {
+      userId,
+      ovrImpact: original.ovrImpact,
+      appliedAt: original.appliedAt,
+      expiresAt: original.expiresAt,
+      reason: original.reason,
+    },
+    after: null,
+    reason: "Admin rescinded penalty",
+  });
 
   const target = MOCK_USERS.find((u) => u.id === userId);
   revalidatePath("/admin/mvp");

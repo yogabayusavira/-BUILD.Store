@@ -20,6 +20,7 @@ import { MOCK_FEEDBACK } from "@/lib/mock-data/feedback";
 import { MOCK_CUSTOMER_FEEDBACK } from "@/lib/mock-data/customer-feedback";
 import { listInboundSubmissions } from "@/lib/mock-data/inbound-submissions";
 import { MOCK_MVP_SCORES } from "@/lib/mock-data/mvp-scores";
+import { MOCK_AUDIT_LOG } from "@/lib/mock-data/audit-log";
 import { championsCourtMembers } from "@/lib/mvp-score";
 import { Card, CardEyebrow, CardTitle } from "@/components/Card";
 
@@ -148,6 +149,18 @@ export default async function AdminHome() {
       title: "Testimonials",
       count: testimonialsPending,
       sub: `${testimonialsPending} customer reviews awaiting promotion`,
+    },
+    {
+      href: "/admin/compliance",
+      title: "Compliance",
+      count: MOCK_AUDIT_LOG.length,
+      sub: "SOC 2 + ISO 27001 control status · audit log entries",
+    },
+    {
+      href: "/admin/audit-log",
+      title: "Audit log",
+      count: MOCK_AUDIT_LOG.length,
+      sub: "Append-only. Every security-relevant action, reverse-chron.",
     },
   ];
 

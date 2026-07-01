@@ -2823,3 +2823,154 @@ export interface FutureModernistRecognition {
   selectedByUserId: string;
   selectedAt: string;
 }
+
+// ──────────────────────────────────────────────────────────────────────
+//  Audit log (SOC 2 CC7.2 / ISO 27001 A.12.4 — Logging and Monitoring)
+// ──────────────────────────────────────────────────────────────────────
+
+/**
+ * Domain-neutral action verbs for the audit log. Intentionally coarse —
+ * every security/financial/compliance-adjacent mutation writes an entry
+ * with one of these verbs plus a resourceKind + resourceId + before/after
+ * snapshot. Not intended to enumerate every product action; product-level
+ * telemetry lives elsewhere.
+ *
+ * When adding a new verb, keep it in the past-tense infinitive form and
+ * document it below so the compliance surface can render it.
+ */
+export type AuditLogAction =
+  // Authentication / session
+  | "user.signed_in"
+  | "user.signed_out"
+  | "user.failed_signin"
+  // Identity + membership
+  | "user.created"
+  | "user.membership_tier_changed"
+  | "user.profile_public_toggled"
+  | "user.admin_flag_changed"
+  // MVP / scoring / compliance
+  | "mvp.sub_rating_set"
+  | "mvp.compliance_penalty_applied"
+  | "mvp.compliance_penalty_rescinded"
+  | "mvp.provisional_promoted"
+  | "mvp.provisional_demoted"
+  // Recognition + canonization
+  | "recognition.selected"
+  | "recognition.revoked"
+  | "canonization.frozen"
+  | "canonization.caption_updated"
+  | "canonization.phygital_requested"
+  // Contracts + compensation
+  | "rfp.approved"
+  | "rfp.rejected"
+  | "contract.base_released"
+  | "contract.bonus_released"
+  | "contract.bonus_reclaimed"
+  | "contract.revenue_split_recorded"
+  // Bookings + calendar (cross-tier)
+  | "booking.request_created"
+  | "booking.request_approved"
+  | "booking.request_declined"
+  | "booking.confirmed"
+  | "booking.cancelled"
+  // Data lifecycle / privacy
+  | "data.subject_export_requested"
+  | "data.subject_erasure_requested"
+  | "data.record_hard_deleted"
+  // Admin config
+  | "config.setting_changed";
+
+export const AUDIT_LOG_ACTION_LABELS: Record<AuditLogAction, string> = {
+  "user.signed_in": "User signed in",
+  "user.signed_out": "User signed out",
+  "user.failed_signin": "Failed sign-in attempt",
+  "user.created": "User created",
+  "user.membership_tier_changed": "Membership tier changed",
+  "user.profile_public_toggled": "Profile visibility toggled",
+  "user.admin_flag_changed": "Admin flag changed",
+  "mvp.sub_rating_set": "MVP sub-rating set",
+  "mvp.compliance_penalty_applied": "Compliance penalty applied",
+  "mvp.compliance_penalty_rescinded": "Compliance penalty rescinded",
+  "mvp.provisional_promoted": "Provisional promoted",
+  "mvp.provisional_demoted": "Provisional demoted",
+  "recognition.selected": "Recognition selected",
+  "recognition.revoked": "Recognition revoked",
+  "canonization.frozen": "Canonization frozen",
+  "canonization.caption_updated": "Canonization caption updated",
+  "canonization.phygital_requested": "Phygital canon card requested",
+  "rfp.approved": "RFP approved",
+  "rfp.rejected": "RFP rejected",
+  "contract.base_released": "Base pay released",
+  "contract.bonus_released": "Bonus released",
+  "contract.bonus_reclaimed": "Bonus reclaimed",
+  "contract.revenue_split_recorded": "Revenue split recorded",
+  "booking.request_created": "Booking requested",
+  "booking.request_approved": "Booking approved",
+  "booking.request_declined": "Booking declined",
+  "booking.confirmed": "Booking confirmed",
+  "booking.cancelled": "Booking cancelled",
+  "data.subject_export_requested": "Data subject export requested",
+  "data.subject_erasure_requested": "Data subject erasure requested",
+  "data.record_hard_deleted": "Record hard-deleted",
+  "config.setting_changed": "Config setting changed",
+};
+
+/** Coarse resource kinds referenced from audit entries. Keep aligned
+ *  with the domain tables — one entry per top-level table. */
+export type AuditLogResourceKind =
+  | "user"
+  | "mvp_score"
+  | "mvp_penalty"
+  | "recognition"
+  | "canonization"
+  | "project"
+  | "milestone"
+  | "booking"
+  | "notification_rule"
+  | "config";
+
+/**
+ * Append-only audit log entry.
+ *
+ * Production requirement (per SOC 2 CC7.2 / ISO A.12.4.2): the log store
+ * itself must be immutable — no UPDATE or DELETE grants on the underlying
+ * table, and a separate replication stream ships entries to a
+ * write-once-read-many store within one business day. Retention is at
+ * least 12 months for operational review and at least 7 years for
+ * financial/regulatory subset (contract/bonus/tier verbs).
+ *
+ * The sandbox stores entries in-memory in MOCK_AUDIT_LOG. Production
+ * replaces with a Drizzle `audit_log` table that has revoked write
+ * permissions on non-INSERT operations at the database role level.
+ */
+export interface AuditLogEntry {
+  id: string;
+  /** Actor: null for system-initiated events (cron, reconciliation). */
+  actorUserId: string | null;
+  /** Actor role at the moment of the action — snapshot, not FK, so
+   *  historical entries stay meaningful even if the actor's role
+   *  changes later. */
+  actorRoleSnapshot: "member" | "partner" | "prospect" | "viewer" | "admin" | "system";
+  action: AuditLogAction;
+  resourceKind: AuditLogResourceKind;
+  resourceId: string;
+  /**
+   * JSON snapshot of the affected fields before the change. Null for
+   * creation events. For sign-in verbs, null (no domain state changed).
+   */
+  before: Record<string, unknown> | null;
+  /**
+   * JSON snapshot of the affected fields after the change. Null for
+   * deletion events. For sign-in verbs, null.
+   */
+  after: Record<string, unknown> | null;
+  /** IP-hint (last-octet-masked in the sandbox and production). Used
+   *  for anomaly detection, never for user tracking. */
+  ipHint: string | null;
+  /** Session identifier hint (opaque, not the actual session token). */
+  sessionHint: string | null;
+  /** Free-form context — human-readable reason when the action
+   *  requires one (e.g. compliance penalty rationale). */
+  reason: string | null;
+  createdAt: string;
+}

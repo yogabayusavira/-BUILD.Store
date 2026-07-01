@@ -23,6 +23,10 @@ import { MOCK_PROJECTS } from "@/lib/mock-data/projects";
 import { feedbackForContext } from "@/lib/mock-data/customer-feedback";
 import { MOCK_PEER_REVIEWS } from "@/lib/mock-data/peer-reviews";
 import { creditPool, ensurePoolForProject } from "@/lib/mock-data/engagement-recovery-pools";
+import {
+  logAuditEvent,
+  snapshotActorRole,
+} from "@/lib/mock-data/audit-log";
 import { evaluateBonusGate } from "@/lib/bonus-gate";
 
 function findProject(id: string) {
@@ -60,7 +64,7 @@ export async function setPmEngagementRating(formData: FormData) {
  * credited to the Engagement Recovery Pool for this project.
  */
 export async function executeBonusDecision(formData: FormData) {
-  await requireAdmin();
+  const admin = await requireAdmin();
   const projectId = String(formData.get("projectId") ?? "").trim();
   const project = findProject(projectId);
 
@@ -97,6 +101,24 @@ export async function executeBonusDecision(formData: FormData) {
   // Initialize the pool row regardless so the surface has something to
   // render even on the release path (it'll just sit at $0).
   ensurePoolForProject(projectId);
+
+  logAuditEvent({
+    actorUserId: admin.id,
+    actorRoleSnapshot: snapshotActorRole(admin),
+    action:
+      project.bonusDecision === "released"
+        ? "contract.bonus_released"
+        : "contract.bonus_reclaimed",
+    resourceKind: "project",
+    resourceId: project.id,
+    before: { bonusDecision: "pending" },
+    after: {
+      bonusDecision: project.bonusDecision,
+      talentBonusAmount: project.talentBonusAmount,
+      bonusDecidedAt: project.bonusDecidedAt,
+    },
+    reason: decision.explanation,
+  });
 
   revalidatePath(`/admin/contracts/${projectId}/settle`);
 }

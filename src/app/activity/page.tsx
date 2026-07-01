@@ -240,6 +240,30 @@ export default async function ActivityPage() {
         chronological, cooperative-internal.
       </p>
 
+      {/* Sandbox illustration banner — same integrity posture as
+          /admin/mvp/canonization. Prior-to-launch seeds demonstrate
+          the surfaces; cooperative canon starts at zero at beta. */}
+      <div
+        className="mt-6 rounded-2xl border px-5 py-4"
+        style={{
+          borderColor: "rgba(212, 175, 55, 0.35)",
+          backgroundColor: "rgba(212, 175, 55, 0.06)",
+        }}
+      >
+        <p
+          className="text-[11px] uppercase tracking-wider"
+          style={{ color: "#D4AF37" }}
+        >
+          Sandbox illustration
+        </p>
+        <p className="mt-1 text-sm text-ink">
+          Events below are illustrative — they render because pre-launch
+          mock data is seeded so surfaces have something to display. At
+          beta, cooperative canon starts at zero; only actions actually
+          taken by Members and admins post-launch land on this feed.
+        </p>
+      </div>
+
       {events.length === 0 ? (
         <Card className="mt-8">
           <p className="text-sm text-ink-muted">

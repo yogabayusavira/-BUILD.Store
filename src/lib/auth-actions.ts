@@ -11,6 +11,10 @@ import { redirect } from "next/navigation";
 import { revalidatePath } from "next/cache";
 import { REAL_SESSION_COOKIE, SESSION_COOKIE } from "@/lib/auth-stub";
 import { MOCK_USERS } from "@/lib/mock-data/users";
+import {
+  logAuditEvent,
+  snapshotActorRole,
+} from "@/lib/mock-data/audit-log";
 
 const SESSION_MAX_AGE = 60 * 60 * 24 * 7;
 
@@ -26,20 +30,54 @@ function sessionCookieOptions() {
 
 export async function signIn(formData: FormData) {
   const uid = String(formData.get("uid") ?? "");
-  if (!MOCK_USERS.some((u) => u.id === uid)) {
+  const user = MOCK_USERS.find((u) => u.id === uid);
+  if (!user) {
+    // Log the failed attempt without leaking the (nonexistent) uid.
+    logAuditEvent({
+      actorUserId: null,
+      actorRoleSnapshot: "system",
+      action: "user.failed_signin",
+      resourceKind: "user",
+      resourceId: uid.slice(0, 40) || "<empty>",
+      before: null,
+      after: null,
+      reason: "Unknown user id supplied",
+    });
     throw new Error("Unknown user id");
   }
   const jar = await cookies();
   jar.set(SESSION_COOKIE, uid, sessionCookieOptions());
   // Signing in as a real user clears any stale view-as breadcrumb.
   jar.delete(REAL_SESSION_COOKIE);
+
+  logAuditEvent({
+    actorUserId: user.id,
+    actorRoleSnapshot: snapshotActorRole(user),
+    action: "user.signed_in",
+    resourceKind: "user",
+    resourceId: user.id,
+  });
+
   redirect("/dashboard");
 }
 
 export async function signOut() {
   const jar = await cookies();
+  const uid = jar.get(SESSION_COOKIE)?.value;
+  const user = uid ? MOCK_USERS.find((u) => u.id === uid) : null;
   jar.delete(SESSION_COOKIE);
   jar.delete(REAL_SESSION_COOKIE);
+
+  if (user) {
+    logAuditEvent({
+      actorUserId: user.id,
+      actorRoleSnapshot: snapshotActorRole(user),
+      action: "user.signed_out",
+      resourceKind: "user",
+      resourceId: user.id,
+    });
+  }
+
   redirect("/");
 }
 

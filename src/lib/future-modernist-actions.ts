@@ -20,6 +20,10 @@ import {
   periodKeyFor,
   recognitionForPeriod,
 } from "@/lib/mock-data/future-modernist-recognitions";
+import {
+  logAuditEvent,
+  snapshotActorRole,
+} from "@/lib/mock-data/audit-log";
 import type { FutureModernistRecognition } from "@/lib/types";
 
 function newRecognitionId(): string {
@@ -77,6 +81,22 @@ export async function selectFutureModernist(formData: FormData) {
   };
   MOCK_FUTURE_MODERNIST_RECOGNITIONS.push(row);
 
+  logAuditEvent({
+    actorUserId: admin.id,
+    actorRoleSnapshot: snapshotActorRole(admin),
+    action: "recognition.selected",
+    resourceKind: "recognition",
+    resourceId: row.id,
+    before: null,
+    after: {
+      userId,
+      periodKind,
+      periodKey: key,
+      periodLabel: label,
+    },
+    reason: narrative.slice(0, 400),
+  });
+
   revalidatePath("/admin/mvp");
   revalidatePath("/admin/mvp/recognition");
   revalidatePath(`/u/${target.handle}`);
@@ -88,15 +108,31 @@ export async function selectFutureModernist(formData: FormData) {
  * for the audit trail.
  */
 export async function rescindFutureModernist(formData: FormData) {
-  await requireAdmin();
+  const admin = await requireAdmin();
   const recognitionId = String(formData.get("recognitionId") ?? "").trim();
   if (!recognitionId) throw new Error("recognitionId is required.");
   const idx = MOCK_FUTURE_MODERNIST_RECOGNITIONS.findIndex(
     (r) => r.id === recognitionId,
   );
   if (idx < 0) throw new Error("Recognition not found.");
-  const userId = MOCK_FUTURE_MODERNIST_RECOGNITIONS[idx].userId;
+  const original = MOCK_FUTURE_MODERNIST_RECOGNITIONS[idx];
+  const userId = original.userId;
   MOCK_FUTURE_MODERNIST_RECOGNITIONS.splice(idx, 1);
+
+  logAuditEvent({
+    actorUserId: admin.id,
+    actorRoleSnapshot: snapshotActorRole(admin),
+    action: "recognition.revoked",
+    resourceKind: "recognition",
+    resourceId: recognitionId,
+    before: {
+      userId: original.userId,
+      periodKind: original.periodKind,
+      periodKey: original.periodKey,
+      periodLabel: original.periodLabel,
+    },
+    after: null,
+  });
 
   const target = MOCK_USERS.find((u) => u.id === userId);
   revalidatePath("/admin/mvp");

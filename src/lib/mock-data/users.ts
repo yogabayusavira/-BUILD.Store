@@ -36,6 +36,7 @@ export const MOCK_USERS: User[] = [
     isAdmin: true,
     talentTags: [],
     avatarPortraitUrl: null,
+    profilePublic: true,
     walletAddress: "0x6551000000000000000000000000000000000001",
     connectedWalletAddress: null,
     connectedWalletProvider: null,
@@ -52,24 +53,28 @@ export const MOCK_USERS: User[] = [
     firstName: "Chibu",
     lastName: "—",
     profileImageUrl: null,
-    // Demoted from "member" to "viewer" 2026-06-29 per bylaw expulsion on
-    // arbitration nonparticipation. Historical references to him (orders,
-    // attribution, tokens, portfolio) stay as record-of-fact; he no
-    // longer carries Member-tier access / privileges. See legal.md +
-    // key-people.md for the full status.
-    membershipTier: "viewer",
+    // Member tier preserved on paper while arbitration is unresolved.
+    // Defensive posture: don't tear up structural standing in a way
+    // that could be used against the cooperative; instead gate
+    // discovery via the `profilePublic` flag below. See key-people.md.
+    membershipTier: "member",
     primaryIndustry: "stem",
     secondaryIndustries: [],
     dataParticipation: false,
     skills: ["full-stack", "smart contracts", "infra"],
-    discipline: "Former core contributor (out per bylaws 2026-06-29)",
+    discipline: "Full-stack Engineer",
     profileMode: "contributor",
-    bio: "Former core contributor. Status: out per bylaws (2026-06-29).",
+    bio: "Core contributor.",
     portfolioUrl: null,
     buildTokenBalance: "8200.50000000",
     isAdmin: false,
     talentTags: [],
     avatarPortraitUrl: null,
+    // Profile excluded from public discovery surfaces (showcase, member
+    // directories, homepage rails, search index) pending arbitration
+    // resolution. Direct-link URL still resolves but stays out of
+    // crawler indexes via the existing visibility predicate.
+    profilePublic: false,
     walletAddress: "0x6551000000000000000000000000000000000002",
     connectedWalletAddress: null,
     connectedWalletProvider: null,
@@ -77,7 +82,7 @@ export const MOCK_USERS: User[] = [
     stripeAccountId: "acct_1Q9chibu0002",
     stripePayoutsEnabled: true,
     createdAt: "2025-02-01T00:00:00Z",
-    updatedAt: "2026-06-29T00:00:00Z",
+    updatedAt: "2026-04-10T00:00:00Z",
   },
   {
     id: "u_aliza",
@@ -99,6 +104,7 @@ export const MOCK_USERS: User[] = [
     isAdmin: false,
     talentTags: [],
     avatarPortraitUrl: null,
+    profilePublic: true,
     walletAddress: "0x6551000000000000000000000000000000000003",
     connectedWalletAddress: null,
     connectedWalletProvider: null,
@@ -128,6 +134,7 @@ export const MOCK_USERS: User[] = [
     isAdmin: false,
     talentTags: [],
     avatarPortraitUrl: null,
+    profilePublic: true,
     walletAddress: "0x6551000000000000000000000000000000000004",
     connectedWalletAddress: null,
     connectedWalletProvider: null,
@@ -157,6 +164,7 @@ export const MOCK_USERS: User[] = [
     isAdmin: false,
     talentTags: [],
     avatarPortraitUrl: null,
+    profilePublic: true,
     walletAddress: null,
     connectedWalletAddress: null,
     connectedWalletProvider: null,
@@ -186,6 +194,7 @@ export const MOCK_USERS: User[] = [
     isAdmin: false,
     talentTags: [],
     avatarPortraitUrl: null,
+    profilePublic: true,
     walletAddress: "0x6551000000000000000000000000000000000005",
     connectedWalletAddress: null,
     connectedWalletProvider: null,
@@ -218,6 +227,7 @@ export const MOCK_USERS: User[] = [
     isAdmin: false,
     talentTags: [],
     avatarPortraitUrl: null,
+    profilePublic: true,
     walletAddress: "0x6551000000000000000000000000000000000010",
     connectedWalletAddress: null,
     connectedWalletProvider: null,
@@ -247,6 +257,7 @@ export const MOCK_USERS: User[] = [
     isAdmin: false,
     talentTags: [],
     avatarPortraitUrl: null,
+    profilePublic: true,
     walletAddress: "0x6551000000000000000000000000000000000011",
     connectedWalletAddress: null,
     connectedWalletProvider: null,
@@ -276,6 +287,7 @@ export const MOCK_USERS: User[] = [
     isAdmin: false,
     talentTags: [],
     avatarPortraitUrl: null,
+    profilePublic: true,
     walletAddress: "0x6551000000000000000000000000000000000012",
     connectedWalletAddress: null,
     connectedWalletProvider: null,
@@ -305,6 +317,7 @@ export const MOCK_USERS: User[] = [
     isAdmin: false,
     talentTags: [],
     avatarPortraitUrl: null,
+    profilePublic: true,
     walletAddress: "0x6551000000000000000000000000000000000013",
     connectedWalletAddress: null,
     connectedWalletProvider: null,

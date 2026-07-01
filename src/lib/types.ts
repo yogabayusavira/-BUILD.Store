@@ -140,6 +140,17 @@ export interface User {
    * transparent-bg variant; URL persists here.
    */
   avatarPortraitUrl: string | null;
+  /**
+   * Discovery gate independent of membership tier. When true (default),
+   * Member-tier profiles surface in `/showcase`, member directories,
+   * homepage rails, and search indexes per the locked visibility matrix.
+   * When false, the profile is excluded from discovery surfaces and
+   * search engine indexing — direct-link URL still resolves but no
+   * platform-side promotion happens. Used for defensive postures (e.g.,
+   * a Member in unresolved legal dispute keeps their structural standing
+   * but their profile info doesn't circulate).
+   */
+  profilePublic: boolean;
   walletAddress: string | null; // ERC-6551 token-bound account address
   /**
    * User's externally-controlled EOA (MetaMask / Coinbase Wallet /

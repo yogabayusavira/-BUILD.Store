@@ -26,10 +26,21 @@ import type { User } from "@/lib/types";
  * Whether the user's profile should appear in public discovery surfaces
  * (showcase, member directory, homepage talent rails, search). Direct-
  * link access to `/u/[handle]` is separate and always available.
+ *
+ * Two gates compose:
+ *   1. Tier eligibility — Member (always) OR Partner with active
+ *      recognition window.
+ *   2. `profilePublic` flag — even Member-tier profiles can opt out of
+ *      discovery (or be opted out by admin for defensive reasons, e.g.,
+ *      a Member in unresolved legal dispute).
+ *
+ * Both must hold for discovery to apply.
  */
 export function publicProfileEligible(
-  user: Pick<User, "id" | "membershipTier">,
+  user: Pick<User, "id" | "membershipTier" | "profilePublic">,
 ): boolean {
+  // Discovery gate first — opt-out applies regardless of tier.
+  if (user.profilePublic === false) return false;
   if (user.membershipTier === "member") return true;
   const { month, year } = activeRecognitionsForUser(user.id);
   return month !== null || year !== null;
@@ -42,7 +53,7 @@ export function publicProfileEligible(
  * who sees the link).
  */
 export function profileShouldIndex(
-  user: Pick<User, "id" | "membershipTier">,
+  user: Pick<User, "id" | "membershipTier" | "profilePublic">,
 ): boolean {
   return publicProfileEligible(user);
 }
@@ -51,8 +62,8 @@ export function profileShouldIndex(
  * Filter a list of users to only those public-discovery eligible. Use
  * on listing surfaces (showcase, member directory, homepage rails).
  */
-export function filterToPublicProfiles<T extends Pick<User, "id" | "membershipTier">>(
-  users: T[],
-): T[] {
+export function filterToPublicProfiles<
+  T extends Pick<User, "id" | "membershipTier" | "profilePublic">,
+>(users: T[]): T[] {
   return users.filter((u) => publicProfileEligible(u));
 }

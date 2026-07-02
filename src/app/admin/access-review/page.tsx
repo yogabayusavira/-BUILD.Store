@@ -81,11 +81,9 @@ export default async function AccessReviewPage() {
         Admin access review
       </h1>
       <p className="mt-2 max-w-2xl text-sm text-ink-muted">
-        Quarterly walk-through of every user carrying the admin flag.
-        For each row, confirm the access is still needed or revoke it
-        with a reason. When you&apos;ve been through the list, record
-        the review completion — that entry is what the auditor asks
-        for during a Type II observation window.
+        Quarterly walk-through of every admin-flagged user. Confirm each
+        row or revoke with a reason. Record completion when done —
+        that entry is what the Type II auditor asks for.
       </p>
 
       {/* Cadence status */}
@@ -137,8 +135,8 @@ export default async function AccessReviewPage() {
           Current admins ({admins.length})
         </h2>
         <p className="mt-2 text-sm text-ink-muted">
-          For each admin, ask: does this person still need this access
-          for their operational role? If not, revoke.
+          Ask for each: does this person still need this access? If
+          not, revoke.
         </p>
 
         <div className="mt-4 space-y-3">
@@ -210,10 +208,8 @@ export default async function AccessReviewPage() {
           Record review completion
         </h2>
         <p className="mt-2 text-sm text-ink-muted">
-          Once you&apos;ve been through the list — leaving flags in
-          place where appropriate and revoking where not — record the
-          completion so the cadence clock resets and the auditor has
-          an entry to point at.
+          When done with the list, record completion. Cadence clock
+          resets, auditor gets a pointer.
         </p>
 
         <form action={recordAccessReview} className="mt-4 space-y-3">

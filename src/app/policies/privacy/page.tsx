@@ -38,10 +38,8 @@ export default function PrivacyPolicy() {
           Sandbox draft
         </p>
         <p className="mt-1 text-sm text-ink">
-          This is a working draft written to satisfy the framework
-          shape and cover the practices already in code. Production
-          version carries counsel review and a signed effective-date
-          footer.
+          Working draft. Production version carries counsel review and a
+          signed effective-date footer.
         </p>
       </div>
 

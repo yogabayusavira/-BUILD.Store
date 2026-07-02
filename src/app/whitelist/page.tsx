@@ -163,10 +163,9 @@ export default function WhitelistPage() {
           The operating system, made legible.
         </h2>
         <p className="mt-3 max-w-2xl text-ink-muted">
-          Eight interlocking systems for cooperative professional work.
-          Standing, recognition, compensation, canonization, tier
-          ladder, compliance, revenue split, covenant — all specified,
-          all connected. Hover a node to see how it fits.
+          Eight interlocking systems: standing, recognition,
+          compensation, canonization, tier ladder, compliance, revenue
+          split, covenant. All specified, all connected.
         </p>
         <div className="mt-6">
           <VentureLaborConstellation />

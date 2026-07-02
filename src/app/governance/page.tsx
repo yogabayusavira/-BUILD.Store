@@ -23,9 +23,9 @@ export default function GovernancePage() {
         How the cooperative operates
       </h1>
       <p className="mt-3 max-w-2xl text-ink-muted">
-        Eight interlocking systems. Written for anyone deciding whether
-        to join the cooperative or work with it. Each section links to
-        the full specification where the sandbox draft lives.
+        Eight interlocking systems. Read this if you&apos;re deciding
+        whether to join or to work with us. Each section links to the
+        full specification.
       </p>
 
       <div className="mt-8">
@@ -40,9 +40,8 @@ export default function GovernancePage() {
         body={
           <>
             <p>
-              Four tiers, real progression. Access is tied to
-              contribution and vouching, not payment. There is no tier
-              you can pay to skip into — that&apos;s the rule, not a
+              Four tiers, real progression. Contribution and vouching,
+              not payment. No tier you can pay to skip. Rule, not
               marketing line.
             </p>
             <ul className="mt-3 space-y-1 pl-5 text-sm text-ink-muted list-disc">
@@ -84,19 +83,18 @@ export default function GovernancePage() {
         body={
           <>
             <p>
-              Deliver what you agreed to. Communicate at least weekly.
-              Route client relationships through the platform. Give
-              honest peer review. Respect confidentiality.
+              Deliver what you agreed to. Communicate weekly. Route
+              client relationships through the platform. Give honest
+              peer review. Respect confidentiality.
             </p>
             <p className="mt-3 text-sm text-ink-muted">
-              These are not aspirations. Each carries a defined
-              consequence — usually a compliance penalty (see below)
-              or, in severe cases, expulsion via bylaw mechanism.
+              Not aspirations. Each carries a consequence — usually a
+              compliance penalty, in severe cases expulsion per bylaws.
             </p>
           </>
         }
         links={[
-          { label: "Read the full covenant", href: "/policies/covenant" },
+          { label: "Full covenant", href: "/policies/covenant" },
         ]}
       />
 
@@ -108,21 +106,19 @@ export default function GovernancePage() {
         body={
           <>
             <p>
-              A composite score across seven sub-ratings: quality,
-              outcomes, reliability, hustle, collaboration, attendance,
-              referrals + business development. Twelve-month rolling
-              window, weighted toward recent work.
+              Composite across seven sub-ratings: quality, outcomes,
+              reliability, hustle, collaboration, attendance, referrals
+              + BD. Twelve-month rolling, weighted to recent work.
             </p>
             <p className="mt-3 text-sm text-ink-muted">
-              Bands: 90+ Champion&apos;s Court eligible. 75-89
-              Promotion eligible. 65-74 Good standing. Below 65
-              Probation. New Members carry a provisional state (no OVR
-              surfaced) until they cross the promotion threshold.
+              Bands: 90+ Champion&apos;s Court eligible. 75-89 Promotion
+              eligible. 65-74 Good standing. Below 65 Probation. New
+              Members are provisional (no OVR surfaced) until they
+              cross the promotion threshold.
             </p>
             <p className="mt-3 text-sm text-ink-muted">
-              The point of a real-time score is that decline is
-              recognized as it happens — not after a year of slow
-              damage. Recovery is the same: consistent contribution
+              Real-time score means decline surfaces inside a quarter,
+              not after a year. Recovery works the same: contribution
               rebuilds the number.
             </p>
           </>
@@ -140,21 +136,16 @@ export default function GovernancePage() {
         body={
           <>
             <p>
-              Each covenant violation triggers a compliance penalty:{" "}
+              Each covenant violation:{" "}
               <strong className="text-ink">−9 OVR for 90 days</strong>,
-              stacking. Three penalties inside 90 days moves a
-              middle-band Member into probation.
+              stacking. Three inside 90 days moves a middle-band Member
+              to probation.
             </p>
             <p className="mt-3 text-sm text-ink-muted">
               Every penalty is admin-recorded with the reason preserved
-              on the immutable audit log. Members can access the
-              cooperative arbitration process if they believe a penalty
-              is mistaken.
-            </p>
-            <p className="mt-3 text-sm text-ink-muted">
-              Rescission is available and itself audit-logged.
-              Everything about the mechanic is legible to the Member it
-              affects and to the admin team.
+              on the audit log. Rescission is available and itself
+              audit-logged. Arbitration is available to any Member who
+              believes a penalty is mistaken.
             </p>
           </>
         }
@@ -176,10 +167,10 @@ export default function GovernancePage() {
                 <strong className="text-ink">
                   Future Modernist of the Month
                 </strong>{" "}
-                — metric-driven shortlist plus admin editorial pick
-                (Phase 1) or Member vote (Phase 2, gated on membership
-                count). Open to Members and Partners. Recognition
-                unlocks a public-discovery window for Partners.
+                — metric shortlist + admin editorial pick (Phase 1) or
+                Member vote (Phase 2, gated on membership count). Open
+                to Members and Partners. Unlocks a public-discovery
+                window for Partners.
               </li>
               <li>
                 <strong className="text-ink">Constellation of the Year</strong>{" "}
@@ -188,14 +179,13 @@ export default function GovernancePage() {
               </li>
               <li>
                 <strong className="text-ink">Champion&apos;s Court</strong>{" "}
-                — standing tier for the top 10% at OVR ≥ 90. Refreshes
-                every daily compute.
+                — top 10% of Members at OVR ≥ 90. Refreshes daily.
               </li>
             </ul>
             <p className="mt-4 text-sm text-ink-muted">
-              Members can co-brand with FM. Recognized Partners get a
-              featured window but not equivalent co-brand weight — the
-              cooperative reserves that for full Members.
+              Members co-brand with FM. Recognized Partners get a
+              featured window at lower co-brand weight — the cooperative
+              reserves the full weight for Members.
             </p>
           </>
         }
@@ -212,21 +202,18 @@ export default function GovernancePage() {
         body={
           <>
             <p>
-              Every talent quote carries two numbers: a base and a
-              ceiling. The base is anchored to the low end of asking
-              and pays regardless. The ceiling — the difference between
-              base and upper — releases only when the engagement clears
-              a quality gate.
+              Every talent quote carries two numbers: base and ceiling.
+              Base pays regardless. Ceiling releases when the engagement
+              clears a quality gate.
             </p>
             <p className="mt-3 text-sm text-ink-muted">
-              Canonical gate: client rating ≥ 4 out of 5. Fallback when
-              client didn&apos;t rate: PM engagement rating (60% weight) +
-              peer review composite (40% weight) ≥ 4. Reclaimed ceilings
-              feed the Engagement Recovery Pool for the cooperative.
+              Gate: client rating ≥ 4/5. Fallback when client
+              didn&apos;t rate: PM rating (60%) + peer composite (40%)
+              ≥ 4. Reclaimed ceilings feed the Engagement Recovery Pool.
             </p>
             <p className="mt-3 text-sm text-ink-muted">
-              The client never sees the gate. This is a talent-side
-              conditioning tool, not a client-facing price lever.
+              The client never sees the gate. Talent-side conditioning,
+              not a client-facing price lever.
             </p>
           </>
         }
@@ -242,31 +229,26 @@ export default function GovernancePage() {
         title="85 / 12 / 3 split, disclosed"
         body={
           <>
-            <p>
-              Of every cooperative-collected dollar:
-            </p>
+            <p>Every cooperative-collected dollar:</p>
             <ul className="mt-2 space-y-1 pl-5 text-sm text-ink-muted list-disc">
               <li>
                 <strong className="text-ink">85%</strong> to the
                 contributor pool (talent + admin pool per contract).
               </li>
               <li>
-                <strong className="text-ink">12%</strong> to the
-                cooperative reserve, which subdivides for treasury,
-                liquidity provisioning for the token rail, and
-                cooperative benefits (health-fund, sabbatical, etc.).
+                <strong className="text-ink">12%</strong> to reserve —
+                subdivides for treasury, LP for the token rail, and
+                cooperative benefits (health fund, sabbatical, etc.).
               </li>
               <li>
                 <strong className="text-ink">3%</strong> to admin
-                operations for platform costs.
+                operations.
               </li>
             </ul>
             <p className="mt-3 text-sm text-ink-muted">
-              The split is disclosed at engagement start on every
-              contract. Members see it on their wallet history in
-              compStage detail (base + released bonus + reclaimed
-              bonus). No silent skim, no admin discretion after the
-              fact.
+              Disclosed at engagement start on every contract. Members
+              see the split in their wallet history in compStage detail.
+              No silent skim.
             </p>
           </>
         }
@@ -283,31 +265,29 @@ export default function GovernancePage() {
         body={
           <>
             <p>
-              At the end of every calendar year, each active Member
-              (and every Partner who held a recognition during the
-              year) mints a canonization card. The card is an ERC-721
-              NFT with an ERC-6551 token-bound account — it functions
-              as a wallet for the Member&apos;s year.
+              End of every calendar year, each active Member (plus every
+              Partner who held a recognition that year) mints a
+              canonization card. ERC-721 NFT with an ERC-6551 token-
+              bound account — a wallet for that Member&apos;s year.
             </p>
             <p className="mt-3 text-sm text-ink-muted">
-              Tier locks to the Member&apos;s rarity band at year-end
-              (gray probation, green good standing, blue promotion
-              eligible, magenta Future Modernist, gold-holographic
-              Champion). The card holds their $BUILD allocation from
-              that year, their wrapped recognition NFTs, cooperative
-              artifacts they collected, and voting weight from that
-              cohort.
+              Tier locks to the year-end rarity band (gray probation,
+              green good standing, blue promotion eligible, magenta
+              Future Modernist, gold-holographic Champion). The card
+              holds $BUILD allocated that year, wrapped recognition
+              NFTs, cooperative artifacts collected, and voting weight
+              from the cohort.
             </p>
             <p className="mt-3 text-sm text-ink-muted">
-              Physical (phygital) versions become a marketplace product
-              class — Members buy their own at near-cost; outsiders buy
-              cards as collectibles at market rate.
+              Phygital versions become a marketplace product class —
+              Members buy their own at near-cost; outsiders buy as
+              collectibles at market rate.
             </p>
             <p className="mt-3 text-sm italic text-ink-muted">
-              Cooperative canon starts at zero. The first real
-              canonization runs at the end of the cooperative&apos;s
-              first full calendar year of operation. No retroactive
-              canon — that would invent standing nobody earned.
+              Cooperative canon starts at zero. First real canonization
+              runs at the end of the first full calendar year. No
+              retroactive canon — that would invent standing nobody
+              earned.
             </p>
           </>
         }
@@ -325,19 +305,13 @@ export default function GovernancePage() {
           <>
             <p>
               Changes to the covenant, MVP mechanic, recognition rails,
-              compensation structure, or revenue split require Member
-              vote. Proposed changes are posted at least 30 days before
-              the vote so Members can read, discuss, and weigh in.
+              compensation, or revenue split require Member vote. Posted
+              at least 30 days before the vote.
             </p>
             <p className="mt-3 text-sm text-ink-muted">
-              Governance weight is the token-weighted balance held in
-              each Member&apos;s annual canonization TBA (production
-              rail). Sandbox: admin proposes changes for testing; Phase
-              2 wires the vote.
-            </p>
-            <p className="mt-3 text-sm text-ink-muted">
-              Every framework change is audit-logged with the proposal,
-              the vote results, and the effective date.
+              Governance weight is the token-weighted balance in each
+              Member&apos;s annual canonization TBA. Every change is
+              audit-logged with proposal + vote results + effective date.
             </p>
           </>
         }
@@ -352,17 +326,14 @@ export default function GovernancePage() {
           Full policy library
         </h2>
         <p className="mt-2 text-sm text-ink-muted">
-          The framework above is the readable summary. The formal
-          documents live at{" "}
+          Above is the readable summary. Formal documents at{" "}
           <Link
             href="/policies"
             className="text-brand-magenta hover:underline"
           >
             /policies
-          </Link>{" "}
-          — Privacy, Covenant, Subprocessor Registry, and more as they
-          land. For procurement-oriented visitors, security posture is
-          summarized at{" "}
+          </Link>
+          . Security posture at{" "}
           <Link href="/trust" className="text-brand-magenta hover:underline">
             /trust
           </Link>

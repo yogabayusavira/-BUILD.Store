@@ -75,10 +75,9 @@ export default function PoliciesIndex() {
         Cooperative policies
       </h1>
       <p className="mt-2 max-w-2xl text-sm text-ink-muted">
-        Everything binding on the cooperative, its Members and Partners,
-        and its counterparties. Sandbox drafts are marked as such —
-        production versions carry a signed effective-date footer and are
-        reviewed annually.
+        Binding on the cooperative, its Members and Partners, and its
+        counterparties. Sandbox drafts marked as such. Production
+        versions carry a signed effective-date footer, reviewed annually.
       </p>
 
       <div className="mt-8 space-y-3">
@@ -120,11 +119,10 @@ export default function PoliciesIndex() {
           Sandbox draft posture
         </p>
         <p className="mt-2 text-sm text-ink-muted">
-          Policies here are marked <strong>Sandbox draft</strong> until
-          counsel review and cooperative counter-signature at production
-          launch. Draft language is written to satisfy the framework
-          shape and cover the concrete practices already in code, so
-          production review is calibration rather than rewrite.
+          Policies here stay <strong>Sandbox draft</strong> until counsel
+          review and cooperative counter-signature at production. Draft
+          language covers the practices already in code; production
+          review is calibration, not rewrite.
         </p>
       </div>
     </div>

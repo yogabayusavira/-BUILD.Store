@@ -7,7 +7,7 @@
  *
  * Champion's Court eligibility is computed at the surface (top 10% of
  * Members AND OVR ≥ 90). Eligible members get a flagged badge in the
- * table; recognition rail surfaces (Champions Circle, Constellation,
+ * table; recognition rail surfaces (Champion's Court, Constellation,
  * Future Modernist of [month]) are downstream and live elsewhere.
  *
  * Architecture lives in `future-modern.md` "MVP Score" section; types in
@@ -64,7 +64,7 @@ export default async function AdminMvpPage() {
           </p>
         </div>
         <div className="text-right">
-          <CardEyebrow>Champions Circle</CardEyebrow>
+          <CardEyebrow>Champion&apos;s Court</CardEyebrow>
           <div className="mt-1 font-display text-3xl font-semibold text-[#007048]">
             {championIds.size}
           </div>
@@ -219,7 +219,7 @@ function BandPill({
       style={{ backgroundColor: accent.bg, color: accent.fg }}
     >
       {inCourt && <span aria-hidden>★</span>}
-      {inCourt ? "Champion's Circle" : standingLabel(thresholdMinFor(band))}
+      {inCourt ? "Champion's Court" : standingLabel(thresholdMinFor(band))}
     </span>
   );
 }

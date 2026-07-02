@@ -21,31 +21,24 @@ export default function TrustPage() {
         Security &amp; privacy
       </h1>
       <p className="mt-3 max-w-2xl text-ink-muted">
-        The cooperative handles engagement briefs, contribution
-        records, and financial data. Here&apos;s how we protect it,
-        who has access, and what we log. Written for the person doing
-        procurement on the other side of an engagement.
+        We handle engagement briefs, contribution records, and financial
+        data. Here&apos;s how we protect it, who has access, and what
+        we log.
       </p>
 
-      {/* Attestation posture — set expectations up front. */}
       <Card className="mt-8">
         <CardEyebrow>Attestation posture</CardEyebrow>
         <p className="mt-3 text-sm text-ink-muted">
-          The platform is designed against{" "}
+          Designed against{" "}
           <strong className="text-ink">SOC 2 Trust Services Criteria</strong>{" "}
           and{" "}
           <strong className="text-ink">ISO/IEC 27001:2022 Annex A</strong>.
-          Formal Type I attestation follows production launch by three
-          months (the minimum observation window); Type II follows at
-          the twelve-month mark. In the meantime, the controls
-          underlying those attestations are already in code — see the
-          summary below.
+          Type I attestation lands three months after production launch;
+          Type II at twelve. Controls are already in code.
         </p>
         <p className="mt-3 text-sm text-ink-muted">
-          If your procurement process requires a signed vendor security
-          questionnaire (VSA / CAIQ / SIG Lite), we&apos;ll fill and
-          return one — the sandbox architecture already covers most
-          questions substantively.
+          Need us to complete a VSA / CAIQ / SIG Lite? Send it. The
+          architecture answers most questions substantively.
         </p>
       </Card>
 
@@ -58,7 +51,7 @@ export default function TrustPage() {
           <Pillar
             title="Every consequential change is logged, immutably"
             body={
-              "The cooperative records every security-relevant action — sign-ins, permission changes, compensation decisions, recognitions, canonizations — to an append-only audit trail. Log entries carry actor, action, before/after state, and IP hint. In production the log is stored in a table where UPDATE and DELETE grants have been revoked at the database role, with a replica shipped to a write-once-read-many archive within one business day. Twelve months hot retention; seven years cold for the financial subset."
+              "Sign-ins, permission changes, compensation decisions, recognitions, canonizations — all written to an append-only audit trail with actor, action, and before/after state. Production revokes UPDATE and DELETE grants at the database role and ships a replica to WORM archive within one business day. Twelve months hot; seven years cold for financial records."
             }
             evidence="SOC 2 CC7.2 · ISO 27001 A.12.4"
           />
@@ -66,7 +59,7 @@ export default function TrustPage() {
           <Pillar
             title="Role-based access, least privilege by default"
             body={
-              "Every admin action is gated by an explicit permission check on the server. Public discovery is gated separately, so a Member's profile visibility can be controlled independently of their tier — defensive when circumstances require it. Production splits the admin role into finance, membership, and moderation scopes so operators see only what their function requires; access is reviewed quarterly."
+              "Every admin action carries a server-side permission check. Discovery is gated separately from tier, so a Member's public visibility can be controlled independently. Production splits admin into finance, membership, and moderation scopes with quarterly review."
             }
             evidence="SOC 2 CC5.2 + CC5.3 · ISO 27001 A.9.2"
           />
@@ -74,7 +67,7 @@ export default function TrustPage() {
           <Pillar
             title="Confidentiality by design"
             body={
-              "Full names, emails, and legal identity are confined to admin surfaces. Public routes show first-name-only. Members can opt into or out of public discovery via a profile toggle independent of their standing tier. Direct messages between Members are cooperative-internal; external clients never see contact details for talent they haven't been formally routed to."
+              "Full names, emails, and legal identity live on admin surfaces only. Public routes show first-name only. Members control their own discoverability. Direct messages stay cooperative-internal; external clients never see talent contact details directly."
             }
             evidence="SOC 2 C1.1"
           />
@@ -82,7 +75,7 @@ export default function TrustPage() {
           <Pillar
             title="Compensation with a receipts trail"
             body={
-              "Every base pay release, every bonus decision (released or reclaimed), and every revenue split is a distinct entry on the audit log with the rationale that produced it — client rating, PM engagement rating, peer review composite, whichever gate applied. Talent sees the whole record on their own wallet; admins see the whole record across the cooperative. Nothing about the payout is silent."
+              "Every base pay release, bonus decision, and revenue split is a distinct audit entry carrying the gate rationale — client rating, PM rating, peer composite, whichever applied. Talent sees the full record on their wallet; admins see the same across the cooperative."
             }
             evidence="SOC 2 CC7.2 · Processing Integrity"
           />
@@ -90,7 +83,7 @@ export default function TrustPage() {
           <Pillar
             title="You control your data"
             body={
-              "Members can request a full JSON export of everything the cooperative holds about them, and can request account erasure with a 30-day soft-delete followed by hard-delete. The financial subset is retained per business-records law with an audit stamp on each retained record at day 31. Both requests are logged to the same immutable audit trail as everything else."
+              "Members can request a JSON export of their data or erase their account. Erasure runs a 30-day soft-delete then hard-delete, with financial records retained per business-records law. Both requests hit the audit log."
             }
             evidence="SOC 2 P5.1 · GDPR Art. 15 + 17 · CCPA §1798.100 + 105"
             href="/profile/data-rights"
@@ -111,12 +104,10 @@ export default function TrustPage() {
 
       <section className="mt-12">
         <h2 className="font-display text-2xl font-semibold">
-          What&apos;s coming with production launch
+          Landing with production
         </h2>
         <p className="mt-3 text-sm text-ink-muted">
-          The architectural pieces above ship with the platform. The
-          infrastructure hardening below lands with production
-          deployment:
+          Infrastructure hardening below lands at production deployment:
         </p>
 
         <div className="mt-4 grid gap-3 md:grid-cols-2">
@@ -150,7 +141,7 @@ export default function TrustPage() {
       <section className="mt-12">
         <h2 className="font-display text-2xl font-semibold">Policies</h2>
         <p className="mt-3 text-sm text-ink-muted">
-          Published policies covering how the cooperative operates:
+          How the cooperative operates, in the words we bind ourselves to:
         </p>
         <ul className="mt-4 space-y-2 text-sm">
           <li>
@@ -200,26 +191,22 @@ export default function TrustPage() {
       <section className="mt-12">
         <h2 className="font-display text-2xl font-semibold">Questions</h2>
         <p className="mt-3 text-sm text-ink-muted">
-          If you have questions about how the cooperative handles data
-          on your engagement, the fastest path is to route them through
-          the account admin on the deal. For anything policy-shaped,
-          write to{" "}
+          Engagement-specific questions route through the account admin
+          on your deal. Policy questions go to{" "}
           <code className="text-brand-magenta">security@buildstore</code>{" "}
-          (production) or use the{" "}
+          (production) or{" "}
           <Link href="/contact" className="text-brand-magenta hover:underline">
             /contact
           </Link>{" "}
-          form (sandbox).
+          (sandbox).
         </p>
       </section>
 
       <div className="mt-12 rounded-2xl border border-[var(--surface-border)] bg-[var(--surface-elevated)] px-5 py-4 text-xs text-ink-muted">
         <p>
-          This page is written for the person doing procurement. If
-          you&apos;re an auditor and want the technical control-by-
-          control mapping, the internal dashboard is at{" "}
-          <code>/admin/compliance</code> (admin auth required) and the
-          long-form audit is in the repo at{" "}
+          Auditors: the control-by-control mapping is at{" "}
+          <code>/admin/compliance</code> (auth required); the long-form
+          audit is at{" "}
           <code>deliverables/compliance/soc2-iso27001-readiness.md</code>.
         </p>
       </div>

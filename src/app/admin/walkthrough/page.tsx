@@ -379,11 +379,9 @@ export default async function WalkthroughPage() {
         Your walkthrough
       </h1>
       <p className="mt-2 max-w-2xl text-sm text-ink-muted">
-        Step-by-step guided tour. Flip into each tier via the &ldquo;View
-        as&rdquo; button, then follow the numbered prompts — click the
-        surface, observe what should happen, note anything that
-        doesn&apos;t. Return to admin at any point via the persistent
-        &ldquo;Return to your admin account&rdquo; affordance in the nav.
+        Flip into each tier via View-as, follow the numbered prompts,
+        note what breaks. Return to admin via the persistent &ldquo;Return
+        to your admin account&rdquo; affordance in the nav.
       </p>
 
       {/* TOC */}
@@ -411,10 +409,8 @@ export default async function WalkthroughPage() {
           Landing / copy audit (Bayu&apos;s pass)
         </h2>
         <p className="mt-2 text-sm text-ink-muted">
-          Before you tour the platform, audit Bayu&apos;s landing-page
-          work against these lenses. Copy carries the design at this
-          stage — if the thesis lands in words, the visual pass has
-          something to serve.
+          Copy carries the design at this stage. If the thesis lands in
+          words, the visual pass has something to serve.
         </p>
         <div className="mt-4 space-y-2">
           {[
@@ -469,10 +465,8 @@ export default async function WalkthroughPage() {
           Cross-cutting stress tests
         </h2>
         <p className="mt-2 text-sm text-ink-muted">
-          After the tier tours, walk these end-to-end paths to verify the
-          compliance mechanics + visibility matrix + edge cases hold. Each
-          test carries a numbered sequence you can walk without switching
-          tiers unless noted.
+          After the tier tours, walk these end-to-end paths. Each is a
+          numbered sequence — no tier flip needed unless noted.
         </p>
 
         <StressTest
@@ -576,11 +570,9 @@ export default async function WalkthroughPage() {
           Cadence
         </p>
         <p className="mt-2 text-sm text-ink-muted">
-          Full walkthrough before each beta invite batch. Spot pass
-          weekly. Bayu-copy audit whenever new landing copy lands. If
-          anything renders wrong, misroutes, or doesn&apos;t fire the
-          expected audit entry, capture the surface path + audit filter
-          that should have caught it.
+          Full walkthrough before each beta batch. Spot pass weekly.
+          Copy audit whenever landing copy changes. Capture the surface
+          path + expected audit filter for anything that misroutes.
         </p>
       </div>
     </div>

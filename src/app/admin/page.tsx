@@ -85,7 +85,7 @@ export default async function AdminHome() {
       href: "/admin/mvp",
       title: "MVP Score",
       count: championsCircleCount,
-      sub: `Champion's Circle (top 10% AND ≥ 90) · ${MOCK_MVP_SCORES.length} snapshots`,
+      sub: `Champion's Court (top 10% AND ≥ 90) · ${MOCK_MVP_SCORES.length} snapshots`,
     },
     { href: "/admin/members", title: "Members", count: MOCK_USERS.length, sub: "Across all tiers" },
     { href: "/admin/applications", title: "Applications", count: pending, sub: "Pending review" },

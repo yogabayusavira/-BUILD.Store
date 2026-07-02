@@ -147,10 +147,9 @@ export default function SubprocessorRegistry() {
           Sandbox draft
         </p>
         <p className="mt-1 text-sm text-ink">
-          Registry lists intended production subprocessors with signed
-          Data Processing Addenda at production onboarding. Sandbox does
-          not itself route data to any of these — all state is in-memory
-          on the local sandbox instance.
+          Intended production subprocessors with DPAs at production
+          onboarding. Sandbox routes no data to any of these — all state
+          is in-memory locally.
         </p>
       </div>
 

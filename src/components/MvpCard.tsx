@@ -46,7 +46,7 @@ interface MvpCardProps {
   >;
   mode: "self" | "peer";
   /**
-   * Whether this user qualifies for Champion's Circle (top 10% of
+   * Whether this user qualifies for Champion's Court (top 10% of
    * Members AND OVR ≥ 90). Caller computes this via
    * `championsCourtMembers()` because the gate depends on cohort context
    * the card alone doesn't have. Default false.
@@ -72,10 +72,10 @@ export function MvpCard({
     );
   }
   const band = standingBand(snapshot.ovr);
-  // Champion's Circle visually overrides the band accent — Court members
+  // Champion's Court visually overrides the band accent — Court members
   // get the gold-flecked green treatment regardless of which band they
   // technically fall into (they're already at OVR ≥ 90 by definition).
-  const accent = isInCourt ? CHAMPIONS_CIRCLE_ACCENT : BAND_ACCENT[band];
+  const accent = isInCourt ? CHAMPIONS_COURT_ACCENT : BAND_ACCENT[band];
   const peer = mode === "peer" ? peerView(snapshot) : null;
   const ovrTextSize = "text-6xl";
 
@@ -98,9 +98,9 @@ export function MvpCard({
         <div
           className="absolute right-3 top-3 rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-wider text-white shadow"
           style={{ backgroundColor: "#007048" }}
-          aria-label="Champion's Circle member"
+          aria-label="Champion's Court member"
         >
-          ★ Champion&apos;s Circle
+          ★ Champion&apos;s Court
         </div>
       )}
 
@@ -394,7 +394,7 @@ function ProvisionalCard({
  * status is cohort-relative (top 10%) not OVR-absolute. Gold dominant
  * — the legendary-tier color reserved for Court members only.
  */
-const CHAMPIONS_CIRCLE_ACCENT: BandAccent = {
+const CHAMPIONS_COURT_ACCENT: BandAccent = {
   border: "rgba(212, 175, 55, 0.75)", // gold
   bar: "#D4AF37",
   ovr: "#D4AF37",

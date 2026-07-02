@@ -38,10 +38,9 @@ export default function CovenantPolicy() {
           Sandbox draft
         </p>
         <p className="mt-1 text-sm text-ink">
-          Draft prepared to satisfy the framework shape and codify the
-          practices already in the cooperative record. Production
-          version carries counsel review and a signed effective-date
-          footer counter-signed by the founding Members.
+          Working draft. Production version carries counsel review and a
+          signed effective-date footer counter-signed by the founding
+          Members.
         </p>
       </div>
 

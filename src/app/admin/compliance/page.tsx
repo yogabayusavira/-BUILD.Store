@@ -39,7 +39,7 @@ const CONTROLS: ComplianceControl[] = [
       "The entity demonstrates a commitment to integrity and ethical values through a documented code of conduct.",
     status: "satisfied",
     sandboxEvidence:
-      "Cooperative Covenant published at /policies/covenant. Sourced from memory/legal.md + bylaws in Chibu FL LLC filing. MVP compliance penalty mechanic enforces covenant with real-time impact.",
+      "Cooperative Covenant published at /policies/covenant. Sourced from memory/legal.md + Future Modern Builderberg LLC bylaws. MVP compliance penalty mechanic enforces covenant in real time.",
     productionRemediation:
       "Counsel review of covenant draft; require signed acknowledgement at Member conversion; annual re-acknowledgement recorded via user.covenant_acknowledged audit verb.",
     href: "/policies/covenant",
@@ -337,7 +337,7 @@ const CONTROLS: ComplianceControl[] = [
       "All relevant legislative statutory, regulatory, contractual requirements shall be explicitly identified.",
     status: "partial",
     sandboxEvidence:
-      "Chibu FL LLC bylaws + Cooperative Covenant in legal.md. Whitelist gates paid-membership sale of governance access.",
+      "Future Modern Builderberg LLC bylaws + Cooperative Covenant in legal.md. Whitelist gates paid-membership sale of governance access.",
     productionRemediation:
       "Add jurisdictional matrix: FL corp filings, CA CCPA (for California residents), NY SHIELD Act, GDPR (if EU users). Annual legal review.",
   },
@@ -372,13 +372,12 @@ export default async function CompliancePage() {
         SOC 2 + ISO 27001 control status
       </h1>
       <p className="mt-2 max-w-3xl text-sm text-ink-muted">
-        Every control we&apos;ve decided to care about, one row. Sandbox
-        evidence + production remediation per row. The long-form audit
-        lives at{" "}
+        Every tracked control, one row. Sandbox evidence + production
+        remediation. Long-form audit at{" "}
         <code className="text-brand-magenta">
           deliverables/compliance/soc2-iso27001-readiness.md
         </code>
-        ; this surface is the at-a-glance shape.
+        .
       </p>
 
       <div className="mt-6 grid gap-3 md:grid-cols-4">
@@ -424,12 +423,10 @@ export default async function CompliancePage() {
           Attestation posture
         </p>
         <p className="mt-2 text-sm text-ink">
-          Pre-attestation. Landing a SOC 2 Type I report requires the
-          production stack (persistent audit log, encryption, backup,
-          incident response) plus a three-month observation window; Type
-          II requires twelve. The rows above map every gap to the
-          production remediation so we can time the audit start to the
-          moment the last &ldquo;planned&rdquo; row lands.
+          Pre-attestation. SOC 2 Type I requires the production stack
+          plus three-month observation; Type II requires twelve. Rows
+          above map every gap to production remediation — time the audit
+          start when the last &ldquo;planned&rdquo; row lands.
         </p>
       </div>
     </div>

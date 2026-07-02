@@ -48,7 +48,7 @@ const NODES: ConstellationNode[] = [
     x: 400,
     y: 460,
     summary:
-      "The behavior every Member commits to. Deliver what you agreed to. Communicate. Route through the platform. Give honest peer review.",
+      "Deliver. Communicate. Route through the platform. Give honest peer review.",
     href: "/policies/covenant",
     color: "#D4AF37", // gold — foundational
   },
@@ -58,7 +58,7 @@ const NODES: ConstellationNode[] = [
     x: 130,
     y: 360,
     summary:
-      "Viewer → Prospect → Partner → Member. Real progression tied to contribution, not payment. Access is not for sale.",
+      "Viewer → Prospect → Partner → Member. Contribution, not payment. Access not for sale.",
     href: "/governance#tier",
     color: "#5070F0",
   },
@@ -68,7 +68,7 @@ const NODES: ConstellationNode[] = [
     x: 300,
     y: 220,
     summary:
-      "0-99 OVR composite of seven sub-ratings. 12-month rolling. Real-time compliance + recognition instrument, not a review at year-end.",
+      "0-99 OVR from seven sub-ratings, 12-month rolling. Real-time compliance + recognition, not a year-end review.",
     href: "/governance#mvp",
     color: "#D828A0",
   },
@@ -78,7 +78,7 @@ const NODES: ConstellationNode[] = [
     x: 500,
     y: 220,
     summary:
-      "Future Modernist of the Month + Constellation of the Year + Champion's Court. Metric shortlist plus editorial narrative — not a popularity contest.",
+      "Future Modernist of the Month + Constellation of the Year + Champion's Court. Metric shortlist + editorial narrative.",
     href: "/governance#recognition",
     color: "#D828A0",
   },
@@ -88,7 +88,7 @@ const NODES: ConstellationNode[] = [
     x: 640,
     y: 340,
     summary:
-      "Base pay guaranteed. Performance ceiling releases on client rating ≥ 4 (or PM + peer composite fallback). Client never sees the gate.",
+      "Base guaranteed. Ceiling releases on client rating ≥ 4 (or PM + peer composite fallback). Client never sees the gate.",
     href: "/governance#compensation",
     color: "#007048",
   },
@@ -98,7 +98,7 @@ const NODES: ConstellationNode[] = [
     x: 670,
     y: 460,
     summary:
-      "85 to talent · 12 to cooperative reserve · 3 to admin operations. Reserve subdivides for treasury, LP, and cooperative benefits.",
+      "85 talent · 12 reserve · 3 admin ops. Reserve subdivides for treasury, LP, and cooperative benefits.",
     href: "/governance#revenue",
     color: "#007048",
   },
@@ -108,7 +108,7 @@ const NODES: ConstellationNode[] = [
     x: 400,
     y: 100,
     summary:
-      "Year-end ERC-721 card with ERC-6551 token-bound account. Members hold their year in a wallet-native artifact. Cooperative canon starts at zero at beta.",
+      "Year-end ERC-721 card with ERC-6551 token-bound account. Wallet-native artifact for the year. Canon starts at zero at beta.",
     href: "/governance#canonization",
     color: "#D4AF37",
   },
@@ -118,7 +118,7 @@ const NODES: ConstellationNode[] = [
     x: 130,
     y: 460,
     summary:
-      "-9 OVR per violation, 90-day duration, stacking. Real-time impact prevents slow decay. Every action audit-logged.",
+      "−9 OVR per violation, 90 days, stacking. Real-time impact prevents slow decay. Every action audit-logged.",
     href: "/governance#compliance",
     color: "#D828A0",
   },
@@ -321,9 +321,9 @@ export function VentureLaborConstellation() {
                 Venture Labor OS
               </p>
               <p className="mt-1 text-sm text-ink-muted">
-                Eight interlocking systems. Not a marketplace — an
-                operating system for cooperative professional work.
-                Hover or tap any point to see how it connects.
+                Eight interlocking systems. An operating system for
+                cooperative professional work, not a marketplace. Hover
+                or tap any point.
               </p>
             </div>
           )}

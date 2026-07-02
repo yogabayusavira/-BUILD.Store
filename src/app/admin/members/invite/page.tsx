@@ -87,10 +87,9 @@ export default async function InviteMemberPage() {
         Invite a new member
       </h1>
       <p className="mt-2 max-w-2xl text-sm text-ink-muted">
-        Issue a redemption link for a specific person + target tier.
-        Sandbox displays the URL for you to copy; production dispatches
-        by email. Every issue + revoke + consumption writes an audit
-        entry.
+        Issue a redemption link for a specific email + tier. Sandbox
+        displays the URL to copy; production dispatches by email. Every
+        issue, revoke, and consumption is audit-logged.
       </p>
 
       <Card className="mt-6">
